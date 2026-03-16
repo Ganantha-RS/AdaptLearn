@@ -1,35 +1,72 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+// Import Layouts
+import MainLayout from "./layouts/MainLayout";
+import QuizLayout from "./layouts/QuizLayout";
+import DashboardLayout from "./layouts/DashboardLayout";
+import LearningLayout from "./layouts/LearningLayout";
+
+// Import Pages
+import Landing from "./pages/public/Landing";
+import Login from "./pages/public/Login";
+import DashboardHome from "./pages/dashboard/DashboardHome";
+import MaterialDetail from "./pages/learning/MaterialDetail";
+import WelcomeScreen from "./pages/quiz/WelcomeScreen";
+import StyleIdentification from "./pages/quiz/StyleIdentification";
+import AssessmentLevel from "./pages/quiz/AssessmentLevel";
+import AnalysisLoading from "./pages/quiz/AnalysisLoading";
+import QuizResult from "./pages/quiz/QuizResult";
 
 function App() {
-  const [count, setCount] = useState(0)
+  // default true biar bisa akses Dashboard tanpa login
+  const isAuthenticated = true;
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        {/* GRUP PUBLIC (Landing, Login, Register) */}
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+        </Route>
+
+        {/* GRUP QUIZ */}
+        <Route
+          element={isAuthenticated ? <QuizLayout /> : <Navigate to="/login" />}
+        >
+          <Route path="/welcome" element={<WelcomeScreen />} />
+          <Route path="/quiz-style" element={<StyleIdentification />} />
+          <Route path="/quiz-level" element={<AssessmentLevel />} />
+          <Route path="/analyzing" element={<AnalysisLoading />} />
+          <Route path="/quiz-result" element={<QuizResult />} />
+        </Route>
+
+        {/* GRUP DASHBOARD */}
+        <Route
+          element={
+            isAuthenticated ? <DashboardLayout /> : <Navigate to="/login" />
+          }
+        >
+          <Route path="/dashboard" element={<DashboardHome />} />
+          {/* Belum perlu kayanya yang bawah */}
+          {/* <Route path="/materi" element={<MateriList />} /> */}
+          {/* <Route path="/profile" element={<Profile />} /> */}
+        </Route>
+
+        {/* GRUP LEARNING */}
+        <Route
+          element={
+            isAuthenticated ? <LearningLayout /> : <Navigate to="/login" />
+          }
+        >
+          {/* :id adalah parameter dinamis untuk ID Materi */}
+          <Route path="/belajar/:id" element={<MaterialDetail />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to="/dashboard" />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
