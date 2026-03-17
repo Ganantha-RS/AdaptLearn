@@ -29,14 +29,12 @@ export const submitQuiz = async (req, res) => {
 export const getQuiz = async (req, res) => {
 
   try {
-
+    console.log("Using Quiz API Key:", process.env.QUIZ_API_KEY ? "Loaded" : "MISSING")
     const response = await axios.get(
       "https://quizapi.io/api/v1/questions",
       {
-        headers: {
-          "X-Api-Key": process.env.QUIZ_API_KEY
-        },
         params: {
+          api_key: process.env.QUIZ_API_KEY,
           category: "code",
           limit: 5
         }
@@ -46,6 +44,7 @@ export const getQuiz = async (req, res) => {
     res.json(response.data)
 
   } catch (error) {
+    console.error("QuizAPI Error Details:", error.response?.data || error.message)
     res.status(500).json({
       message: "Failed to fetch quiz"
     })
