@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
 
   return (
@@ -10,10 +10,10 @@ const Login = () => {
         {/* Title */}
         <div className="text-center space-y-1">
           <h2 className="text-2xl font-bold text-gray-800">
-            Login to AdaptLearn
+            Register for AdaptLearn
           </h2>
           <p className="text-sm text-gray-500">
-            Please enter your details to access your account.
+            Create your account to start your learning journey.
           </p>
         </div>
 
@@ -23,7 +23,7 @@ const Login = () => {
           <input
             type="email"
             placeholder="you@example.com"
-            className="w-full mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+            className="w-full mt-1 p-3 border rounded-lg focus:ring-2 focus:ring-orange-400"
           />
         </div>
 
@@ -33,32 +33,42 @@ const Login = () => {
           <input
             type="password"
             placeholder="••••••••"
-            className="w-full mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+            className="w-full mt-1 p-3 border rounded-lg focus:ring-2 focus:ring-orange-400"
           />
         </div>
 
-        {/* Remember me */}
+        {/* Confirm Password */}
+        <div>
+          <label className="text-sm text-gray-600">Confirm Password</label>
+          <input
+            type="password"
+            placeholder="••••••••"
+            className="w-full mt-1 p-3 border rounded-lg focus:ring-2 focus:ring-orange-400"
+          />
+        </div>
+
+        {/* Terms */}
         <div className="flex items-center space-x-2 text-sm text-gray-500">
           <input type="checkbox" />
-          <span>Remember Me</span>
+          <span>I agree to the Terms of Service</span>
         </div>
 
         {/* Button */}
         <button
-          onClick={() => navigate("/welcome")}
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-semibold transition"
+          onClick={() => navigate("/login")}
+          className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-semibold"
         >
-          Login
+          Register
         </button>
 
-        {/* Bottom text */}
+        {/* Bottom */}
         <p className="text-sm text-center text-gray-500">
-          Don’t have an account?{" "}
+          Already have an account?{" "}
           <span
-            onClick={() => navigate("/register")}
+            onClick={() => navigate("/login")}
             className="text-orange-500 cursor-pointer font-medium"
           >
-            Register
+            Login
           </span>
         </p>
       </div>
@@ -66,4 +76,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
