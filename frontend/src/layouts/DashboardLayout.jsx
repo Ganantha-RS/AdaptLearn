@@ -1,6 +1,6 @@
 import { Outlet, Link } from 'react-router-dom';
 import { Bell, Search } from 'lucide-react';
-import logo from '../assets/logo-adaptlearn.png';
+import logo from '../assets/logo-adaptlearn.webp';
 
 const DashboardLayout = () => {
   return (
