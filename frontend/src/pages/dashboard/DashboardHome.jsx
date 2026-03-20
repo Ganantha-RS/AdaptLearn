@@ -148,7 +148,9 @@ const DashboardHome = () => {
               </div>
             </div>
 
-            <div className="bg-white/90 backdrop-blur rounded-xl h-24 w-full mb-3 shadow-sm border-none shadow-none"></div>
+            <div className="bg-white/90 backdrop-blur rounded-xl h-24 w-full mb-3 shadow-sm border-none shadow-none overflow-hidden">
+              <p className="p-4 line-clamp-3">Ini deskripsi dari user Ini deskripsi dari user Ini deskripsi dari user Ini deskripsi dari user Ini deskripsi dari user Ini deskripsi dari user Ini deskripsi dari user Ini deskripsi dari user Ini deskripsi dari user</p>
+            </div>
 
             <div className="flex justify-end">
               <Button variant="link" className="text-primary-dark font-bold text-xs p-0 h-auto gap-1 hover:text-primary transition-colors">
