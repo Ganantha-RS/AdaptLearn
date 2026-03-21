@@ -1,10 +1,54 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
+const API_URL = "http://localhost:5000/api/auth/login";
+
 const Login = () => {
   const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleLogin = async () => {
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Invalid login credentials");
+      }
+
+      const storage = rememberMe ? localStorage : sessionStorage;
+      storage.setItem("userSession", JSON.stringify(data.session));
+      storage.setItem("userProfile", JSON.stringify(data.profile));
+
+      navigate("/welcome");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#f5efe6]">
@@ -20,11 +64,16 @@ const Login = () => {
             </p>
           </div>
 
+          {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+
           {/* Email */}
           <div>
             <label className="text-sm text-gray-600">Email</label>
             <Input
               type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               placeholder="you@example.com"
               className="mt-1"
             />
@@ -35,23 +84,32 @@ const Login = () => {
             <label className="text-sm text-gray-600">Password</label>
             <Input
               type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               placeholder="••••••••"
               className="mt-1"
             />
           </div>
 
-          {/* Remember me */}
           <div className="flex items-center space-x-2 text-sm text-gray-500">
-            <input type="checkbox" />
-            <span>Remember Me</span>
+            <input 
+              type="checkbox" 
+              id="rememberMe"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="cursor-pointer"
+            />
+            <label htmlFor="rememberMe" className="cursor-pointer">Remember Me</label>
           </div>
 
           {/* Button */}
-          <Button
-            onClick={() => navigate("/welcome")}
+          <Button 
+            onClick={handleLogin}
+            disabled={loading}
             className="w-full bg-orange-500 hover:bg-orange-600"
           >
-            Login
+            {loading ? "Loading" : "Login"}
           </Button>
 
           {/* Bottom text */}
