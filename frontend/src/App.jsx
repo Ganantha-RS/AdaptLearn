@@ -12,6 +12,8 @@ import Login from "./pages/public/Login";
 import Register from "./pages/public/Register";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import MaterialDetail from "./pages/learning/MaterialDetail";
+import VisualLearningPage from "./pages/learning/VisualLearningPage";
+import ReadingLearningPage from "./pages/learning/ReadingLearningPage";
 import WelcomeScreen from "./pages/quiz/WelcomeScreen";
 import StyleIdentification from "./pages/quiz/StyleIdentification";
 import AssessmentLevel from "./pages/quiz/AssessmentLevel";
@@ -19,7 +21,7 @@ import AnalysisLoading from "./pages/quiz/AnalysisLoading";
 import QuizResult from "./pages/quiz/QuizResult";
 
 function App() {
-  // default true biar bisa akses Dashboard tanpa login
+    // default true so can access the dashboard without login
   const isAuthenticated = true;
 
   return (
@@ -50,7 +52,6 @@ function App() {
           }
         >
           <Route path="/dashboard" element={<DashboardHome />} />
-        
         </Route>
 
         {/* GRUP LEARNING */}
@@ -59,8 +60,11 @@ function App() {
             isAuthenticated ? <LearningLayout /> : <Navigate to="/login" />
           }
         >
-          
-          <Route path="/belajar/:id" element={<MaterialDetail />} />
+          <Route path="/belajar/video/:id" element={<VisualLearningPage />} />
+          <Route path="/belajar/materi/:id" element = {<ReadingLearningPage />} />
+          {/* /belajar/materi/:id url parameternya(materi) itukah? */}
+
+          {/* <Route path="/belajar/:id" element={<MaterialDetail />} /> */}
         </Route>
 
         <Route path="*" element={<Navigate to="/dashboard" />} />

@@ -1,35 +1,54 @@
-// src/layouts/LearningLayout.jsx
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
+import { ArrowLeft, ArrowRight, Bell } from 'lucide-react';
+import logo from '../assets/logo-adaptlearn.webp';
 
 const LearningLayout = () => {
-  const navigate = useNavigate();
-
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      {/* Navbar dengan Tombol Kembali */}
-      <nav className="h-14 border-b flex items-center px-4 sticky top-0 bg-white z-50">
-        <button 
-          onClick={() => navigate('/dashboard')}
-          className="p-2 hover:bg-gray-100 rounded-full"
-        >
-          ← <span className="ml-2 font-medium">Keluar</span>
-        </button>
+    <div className="min-h-screen bg-white flex flex-col font-sans">
+      {/* Header Like Dashboard Layout */}
+      <nav className="h-16 border-b border-background-alt flex items-center justify-between px-4 md:px-6 sticky top-0 bg-white z-50">
+        <div className="flex items-center gap-2">
+          <Link to="/dashboard" className="flex items-center gap-2">
+            <img src={logo} alt="AdaptLearn Logo" className="h-8 w-auto" />
+            <span className="text-xl font-bold text-gray-900">
+              Adapt<span className="text-primary">Learn</span>
+            </span>
+          </Link>
+        </div>
+
+        <div className="hidden md:flex bg-background-alt text-text-primary px-4 py-1.5 rounded-full font-bold text-sm items-center">
+          Visual Learner
+        </div>
+
+        <div className="flex items-center gap-4">
+          <button className="text-text-secondary hover:text-primary transition-colors">
+            <Bell size={20} />
+          </button>
+          <div className="w-8 h-8 rounded-full bg-primary-light"></div>
+        </div>
       </nav>
 
-      {/* Isi Materi */}
-      <main className="flex-1 p-6 pb-24">
+      {/* Main Content */}
+      <main className="flex-1">
         <Outlet />
       </main>
 
-      {/* Footer Navigasi Materi */}
-      <div className="fixed bottom-0 w-full p-4 bg-white border-t flex gap-4">
-        <button className="flex-1 py-3 border border-primary text-primary rounded-xl font-semibold">
-          Sebelumnya
-        </button>
-        <button className="flex-[2] py-3 bg-primary text-white rounded-xl font-semibold shadow-lg shadow-primary/20">
-          Materi Selanjutnya
-        </button>
+      {/* Footer */}
+      <div className="w-full bg-white mt-auto">
+        <div className="max-w-5xl mx-auto px-6 py-8 flex justify-between items-center">
+          <button className="flex items-center gap-3 text-lg font-bold text-gray-900 hover:text-primary transition-colors">
+            <ArrowLeft size={20} strokeWidth={2.5} /> Previous
+          </button>
+          <button className="flex items-center gap-3 text-lg font-bold text-gray-900 hover:text-primary transition-colors">
+            Next Lesson <ArrowRight size={20} strokeWidth={2.5} />
+          </button>
+        </div>
       </div>
+
+      {/* Copyright Footer */}
+      <footer className="w-full py-8 text-center text-xs font-bold text-gray-900 bg-[#fffbf0]">
+        2026 AdaptLearn. All Rights Reserved
+      </footer>
     </div>
   );
 };
