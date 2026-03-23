@@ -4,6 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MessageCircle } from "lucide-react";
 import { useState } from "react";
 import ContactModal from "@/components/ContactModal";
+import hero from '@/assets/images/hero-img.webp';
+import fitur1 from '@/assets/images/fitur-img-1.webp';
+import fitur2 from '@/assets/images/fitur-img-2.webp';
+import cta from '@/assets/images/cta-img.webp';
 
 const Landing = () => {
   const [isContactOpen, setIsContactOpen] = useState(false);
@@ -13,7 +17,6 @@ const Landing = () => {
         {/* Hero Section */}
         <section className="container mx-auto px-6 py-16">
             <div className="grid md:grid-cols-2 gap-12 items-center">
-            {/* Left Content */}
             <div>
                 <div className="inline-flex bg-orange-50 border border-orange-400 text-primary px-4 py-2 rounded-full text-sm font-semibold mb-6">
                 Platform Belajar Adaptif
@@ -51,7 +54,7 @@ const Landing = () => {
                 
                 <div className="relative z-10 rounded-full overflow-hidden shadow-2xl w-[400px] h-[400px] transform hover:scale-105 transition-transform duration-300">
                   <img 
-                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600" 
+                    src={hero} 
                     alt="Students learning together"
                     className="w-full h-full object-cover"
                   />
@@ -127,7 +130,7 @@ const Landing = () => {
                 <CardContent className="p-8 flex flex-row gap-6 items-start">
                     <div className="flex-shrink-0">
                     <img 
-                        src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=300&h=400&fit=crop" 
+                        src={fitur1} 
                         alt="Learning Together"
                         className="rounded-2xl w-24 h-32 md:w-48 md:h-64 object-cover"
                     />
@@ -191,7 +194,7 @@ const Landing = () => {
                     </p>
                     <div className="mt-4">
                         <img 
-                        src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=200&fit=crop" 
+                        src={fitur2}
                         alt="Collaboration"
                         className="rounded-xl w-full h-32 object-cover"
                         />
@@ -291,7 +294,7 @@ const Landing = () => {
         <section className="relative py-18 overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img 
-              src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200" 
+              src={cta}
               alt="Happy students"
               className="w-full h-full object-cover"
             />
