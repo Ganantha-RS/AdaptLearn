@@ -1,9 +1,15 @@
 import { Button } from "@/components/ui/button";
+import { Link } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
+import { MessageCircle } from "lucide-react";
+import { useState } from "react";
+import ContactModal from "@/components/ContactModal";
 
 const Landing = () => {
+  const [isContactOpen, setIsContactOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-muted">
         {/* Hero Section */}
         <section className="container mx-auto px-6 py-16">
             <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -20,35 +26,47 @@ const Landing = () => {
                 </h1>
                 
                 <p className="text-gray-600 text-lg mb-8 max-w-md">
-                AdaptLearn mengenali gaya belajarmu lewat kuis singkat, lalu merekomendasikan materi dalam format yang paling cocok
+                AdaptLearn mengenali gaya belajarmu lewat kuis singkat, lalu merekomendasikan materi dalam format yang paling cocok untukmu
                 </p>
                 
-                <Button className="bg-primary hover:bg-orange-600 text-white px-8 py-3 rounded-full font-semibold shadow-lg">
-                Mulai Gratis Sekarang 🚀
-                </Button>
+                <Link to="/register">
+                    <Button className="bg-primary hover:bg-orange-600 text-white px-8 py-6 rounded-full font-semibold shadow-lg text-lg">
+                    Mulai Gratis Sekarang 
+                    </Button>
+                </Link>
             </div>
             
-            {/* Right Image */}
-            <div className="relative">
-                <div className="relative z-10 rounded-full overflow-hidden border-8 border-orange-100 shadow-2xl">
-                <img 
+            {/* Foto Hero Section */}
+            <div className="relative flex items-center justify-center min-h-[500px]">
+                <div className="absolute top-5 right-5 w-56 h-56 bg-orange-200 rounded-full opacity-40"></div>
+                <div className="absolute bottom-5 left-5 w-48 h-48 bg-yellow-200 rounded-full opacity-40"></div>
+                <div className="absolute top-1/3 right-1/4 w-32 h-32 bg-orange-100 rounded-full opacity-30"></div>
+                
+                <div className="absolute top-16 left-8 w-0 h-0 border-l-[30px] border-l-transparent border-r-[30px] border-r-transparent border-b-[50px] border-b-orange-400 opacity-80"></div>
+                <div className="absolute bottom-24 right-16 w-0 h-0 border-l-[25px] border-l-transparent border-r-[25px] border-r-transparent border-b-[40px] border-b-yellow-400 opacity-70"></div>
+                <div className="absolute top-1/2 left-2 w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-b-[35px] border-b-orange-300 opacity-60"></div>
+                <div className="absolute bottom-1/3 right-8 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-b-[25px] border-b-yellow-300 opacity-50"></div>
+                
+                <div className="absolute top-1/4 left-1/4 w-24 h-24 border-4 border-orange-300 rounded-full opacity-30"></div>
+                
+                <div className="relative z-10 rounded-full overflow-hidden shadow-2xl w-[400px] h-[400px] transform hover:scale-105 transition-transform duration-300">
+                  <img 
                     src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600" 
                     alt="Students learning together"
-                    className="w-full h-auto"
-                />
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                {/* Decorative elements */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-orange-200 rounded-full -z-10 blur-3xl opacity-60"></div>
-                <div className="absolute bottom-0 left-0 w-40 h-40 bg-yellow-200 rounded-full -z-10 blur-3xl opacity-60"></div>
-                <div className="absolute top-1/2 right-1/4 w-0 h-0 border-l-[30px] border-l-transparent border-r-[30px] border-r-transparent border-b-[50px] border-b-orange-400 opacity-80"></div>
+                
+                <div className="absolute top-10 right-1/3 w-3 h-3 bg-orange-400 rounded-full"></div>
+                <div className="absolute bottom-16 left-1/4 w-4 h-4 bg-yellow-400 rounded-full"></div>
+                <div className="absolute top-2/3 right-12 w-2 h-2 bg-orange-300 rounded-full"></div>
             </div>
             </div>
         </section>
 
-        {/* Orange Section*/}
         <section className="bg-primary py-20">
             <div className="container mx-auto px-6 text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-12">
+            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-12">
                 Kamu Pernah Ngerasain Ini?
             </h2>
             
@@ -84,17 +102,232 @@ const Landing = () => {
         </section>
 
         {/* Fitur Unggulan */}
-        <section className="container mx-auto px-6 py-16">
-            <div className="inline-flex bg-orange-50 border border-orange-400 text-primary px-4 py-2 rounded-full text-sm font-semibold mb-6">
+        <section className="bg-muted py-16" id="fitur">
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-12">
+                <div className="inline-flex bg-orange-50 border border-orange-400 text-primary px-4 py-2 rounded-full text-sm font-semibold mb-6">
                 Fitur Unggulan
+                </div>
+              
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                <span className="font-bold text-gray-900">
+                  Adapt<span className="text-primary">Learn </span>
+                </span> 
+                 Punya Semua yang Kamu Butuhkan untuk Belajar
+              </h2>
+              <p className="text-gray-600 text-lg max-w-3xl mx-auto">
+                Platform ini dirancang agar proses belajarmu terasa personal, menyenangkan, dan efektif.
+              </p>
             </div>
-            <h2 className="font-bold text-2xl md:text-4xl text-gray-900 leading-tight mb-6">
-                Adapt<span className="text-primary">Learn</span> Punya Semua<br /> yang Kamu Butuhkan<br /> untuk Belajar
-            </h2>  
-            <p className="text-gray-600 text-lg mb-8 max-w-md">
-                Platform ini dirancang agar proses belajarmu terasa lebih personal, menyenangkan, dan efektif
-            </p>      
+
+            <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+
+            {/* Card 1 */}
+            <Card className="md:col-span-2 bg-white rounded-3xl shadow-md border-none hover:shadow-xl hover:bg-primary transition-all duration-300 overflow-hidden group">
+                <CardContent className="p-8 flex flex-row gap-6 items-start">
+                    <div className="flex-shrink-0">
+                    <img 
+                        src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=300&h=400&fit=crop" 
+                        alt="Learning Together"
+                        className="rounded-2xl w-24 h-32 md:w-48 md:h-64 object-cover"
+                    />
+                    </div>
+
+                    <div className="flex-1">
+                    <div className="w-12 h-12 bg-orange-200 group-hover:bg-white rounded-xl flex items-center justify-center mb-4 transition-colors">
+                        <span className="text-2xl">📚</span>
+                    </div>
+                    <h3 className="text-lg md:text-2xl font-bold text-gray-900 group-hover:text-white mb-2 md:mb-3 transition-colors">
+                        Materi yang Pas Untukmu
+                    </h3>
+                    <p className="text-gray-600 group-hover:text-white leading-relaxed text-xs md:text-sm transition-colors">
+                        Sistem otomatis merekomendasikan video atau teks interaktif sesuai gaya belajarmu.
+                    </p>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Card 2 */}
+            <Card className="bg-white rounded-3xl shadow-md border-none hover:shadow-xl hover:bg-primary transition-all duration-300 group">
+                <CardContent className="p-8">
+                  <div className="w-12 h-12 bg-blue-200 group-hover:bg-white rounded-xl flex items-center justify-center my-2 transition-colors">
+                    <span className="text-2xl">🔎</span>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 group-hover:text-white mb-3 transition-colors">
+                    Kenali Gaya Belajarmu
+                  </h3>
+                  <p className="text-gray-600 group-hover:text-white leading-relaxed text-sm transition-colors">
+                    Isi kuis dan sistem langsung mendeteksi tipe belajar terbaikmu
+                  </p>
+                </CardContent>
+            </Card>
+
+            {/* Card 3 */}
+            <Card className="bg-white rounded-3xl shadow-md border-none hover:shadow-xl hover:bg-primary transition-all duration-300 group">
+                <CardContent className="p-8">
+                    <div className="w-12 h-12 bg-orange-200 group-hover:bg-white rounded-xl flex items-center justify-center mb-4 transition-colors">
+                        <span className="text-2xl">🏆</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 group-hover:text-white mb-3 transition-colors">
+                        Pantau Progress Belajarmu
+                    </h3>
+                    <p className="text-gray-600 group-hover:text-white leading-relaxed text-sm transition-colors">
+                        Dashboard interaktif menampilkan level, topik selesai, dan progress belajar secara real-time.
+                    </p>
+                </CardContent>
+            </Card>
+
+            {/* Card 4 */}
+            <Card className="md:col-span-2 bg-white rounded-3xl shadow-md border-none hover:shadow-xl hover:bg-primary transition-all duration-300 overflow-hidden group">
+                <CardContent className="p-8 relative">
+                    <div className="w-12 h-12 bg-orange-200 group-hover:bg-white rounded-xl flex items-center justify-center mb-4 transition-colors">
+                        <span className="text-2xl">🤝</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 group-hover:text-white mb-3 transition-colors">
+                        Berkembang di Level yang Tepat
+                    </h3>
+                    <p className="text-gray-600 group-hover:text-white leading-relaxed text-sm mb-4 transition-colors">
+                        Sistem secara otomatis menyesuaikan tingkat kesulitan materi seiring perkembanganmu. Dari pemula hingga mahir, tanpa perlu mengatur apapun secara manual.
+                    </p>
+                    <div className="mt-4">
+                        <img 
+                        src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=200&fit=crop" 
+                        alt="Collaboration"
+                        className="rounded-xl w-full h-32 object-cover"
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+            </div>
+          </div>
         </section>
+
+        {/* Mulai Dalam 3 Langkah Praktis */}
+        <section className="bg-gradient-to-b from-muted-50 via-muted-100 to-orange-300 py-24">
+          <div className="container mx-auto px-6 text-center">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-16">
+              Mulai Dalam 3 Langkah Praktis
+            </h2>
+
+            <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 max-w-5xl mx-auto mb-16">
+              <div className="flex flex-col items-center">
+                <div className="w-24 h-24 bg-gradient-to-br from-orange-300 to-orange-500 rounded-full flex items-center justify-center text-white text-4xl font-bold mb-4 shadow-lg">
+                  1
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Daftar Gratis</h3>
+                <div className="bg-white px-6 py-2 rounded-full text-sm font-semibold text-gray-700 shadow-md">
+                  30 Detik
+                </div>
+              </div>
+
+              <div className="hidden md:block w-24 h-1 bg-orange-400"></div>
+
+              <div className="flex flex-col items-center">
+                <div className="w-24 h-24 bg-white border-4 border-orange-400 rounded-full flex items-center justify-center text-orange-400 text-4xl font-bold mb-4 shadow-lg">
+                  2
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Isi Kuis Gaya Belajar</h3>
+                <div className="bg-white px-6 py-2 rounded-full text-sm font-semibold text-gray-700 shadow-md">
+                  2 Menit
+                </div>
+              </div>
+
+              <div className="hidden md:block w-24 h-1 bg-orange-400"></div>
+
+              <div className="flex flex-col items-center">
+                <div className="w-24 h-24 bg-gradient-to-br from-orange-300 to-orange-500 rounded-full flex items-center justify-center text-white text-4xl font-bold mb-4 shadow-lg">
+                  3
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Mulai Belajar</h3>
+                <div className="bg-white px-6 py-2 rounded-full text-sm font-semibold text-gray-700 shadow-md">
+                  Kapanpun
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Hasil yang Sesuai Gaya Belajarmu */}
+        <section className="bg-orange-300 py-24">
+          <div className="container mx-auto px-6">
+            <Card className="max-w-4xl mx-auto bg-primary border-2 border-white/50 shadow-2xl">
+              <CardContent className="p-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">
+                  Hasil yang Sesuai Gaya Belajarmu
+                </h2>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <Card className="bg-white rounded-2xl shadow-lg border-none hover:scale-105 transition-transform">
+                    <CardContent className="p-8 text-center">
+                      <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">Visual Learner</h3>
+                      <p className="text-gray-600 text-sm">Belajar dengan video dan gambar</p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-white rounded-2xl shadow-lg border-none hover:scale-105 transition-transform">
+                    <CardContent className="p-8 text-center">
+                      <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">Text Enjoyer</h3>
+                      <p className="text-gray-600 text-sm">Belajar dengan membaca artikel</p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="relative py-18 overflow-hidden">
+          <div className="absolute inset-0 z-0">
+            <img 
+              src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200" 
+              alt="Happy students"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-orange-500/90 to-orange-600/90"></div>
+          </div>
+
+          <div className="container mx-auto px-6 relative z-10 text-center">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Siap Memulai Perjalanan Belajarmu?
+            </h2>
+            <p className="text-white/90 text-xl mb-8 max-w-2xl mx-auto">
+              Bergabunglah dengan kami untuk merasakan cara belajar yang lebih efektif dan menyenangkan
+            </p>
+            <Link to="/login">
+                <Button className="bg-white text-orange-500 hover:bg-gray-100 px-10 py-6 text-lg font-bold rounded-full shadow-2xl transform hover:scale-105 transition-all">
+                Cari Tahu Gaya Belajarmu Sekarang!
+                </Button>
+            </Link>
+          </div>
+        </section>
+
+        {/* Button Modal Contact */}
+        <button
+          onClick={() => setIsContactOpen(true)}
+          className="group fixed bottom-6 right-6 bg-orange-500 hover:bg-orange-600 text-white rounded-full shadow-2xl z-50 transition-all duration-300 flex items-center gap-2 overflow-hidden"
+        >
+          <div className="p-4 pr-2">
+            <MessageCircle className="w-6 h-6" />
+          </div>
+          <span className="max-w-0 group-hover:max-w-xs overflow-hidden transition-all duration-300 whitespace-nowrap pr-0 group-hover:pr-4 font-semibold">
+            Butuh Bantuan?
+          </span>
+        </button>
+
+        {/* Contact Modal */}
+        <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
     </div>
   );
 };
