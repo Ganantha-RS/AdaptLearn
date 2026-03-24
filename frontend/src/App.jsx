@@ -9,8 +9,11 @@ import LearningLayout from "./layouts/LearningLayout";
 // Import Pages
 import Landing from "./pages/public/Landing";
 import Login from "./pages/public/Login";
+import Register from "./pages/public/Register";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import MaterialDetail from "./pages/learning/MaterialDetail";
+import VisualLearningPage from "./pages/learning/VisualLearningPage";
+import ReadingLearningPage from "./pages/learning/ReadingLearningPage";
 import WelcomeScreen from "./pages/quiz/WelcomeScreen";
 import StyleIdentification from "./pages/quiz/StyleIdentification";
 import AssessmentLevel from "./pages/quiz/AssessmentLevel";
@@ -18,7 +21,7 @@ import AnalysisLoading from "./pages/quiz/AnalysisLoading";
 import QuizResult from "./pages/quiz/QuizResult";
 
 function App() {
-  // default true biar bisa akses Dashboard tanpa login
+    // default true so can access the dashboard without login
   const isAuthenticated = true;
 
   return (
@@ -28,6 +31,7 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Route>
 
         {/* GRUP QUIZ */}
@@ -48,9 +52,6 @@ function App() {
           }
         >
           <Route path="/dashboard" element={<DashboardHome />} />
-          {/* Belum perlu kayanya yang bawah */}
-          {/* <Route path="/materi" element={<MateriList />} /> */}
-          {/* <Route path="/profile" element={<Profile />} /> */}
         </Route>
 
         {/* GRUP LEARNING */}
@@ -59,8 +60,11 @@ function App() {
             isAuthenticated ? <LearningLayout /> : <Navigate to="/login" />
           }
         >
-          {/* :id adalah parameter dinamis untuk ID Materi */}
-          <Route path="/belajar/:id" element={<MaterialDetail />} />
+          <Route path="/belajar/video/" element={<VisualLearningPage />} />
+          <Route path="/belajar/materi/" element = {<ReadingLearningPage />} />
+          {/* /belajar/materi/:materiId gini kepanjangan ga? */}
+
+          {/* <Route path="/belajar/:id" element={<MaterialDetail />} /> */}
         </Route>
 
         <Route path="*" element={<Navigate to="/dashboard" />} />
@@ -70,3 +74,5 @@ function App() {
 }
 
 export default App;
+
+//apa aja

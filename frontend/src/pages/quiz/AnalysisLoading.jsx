@@ -26,7 +26,7 @@ const AnalysisLoading = () => {
           Menganalisis Profilmu...
         </h2>
         <p className="text-text-secondary max-w-xs mx-auto">
-          AI kami sedang menyusun rekomendasi materi yang paling pas buat kamu.
+          Kami sedang menyusun rekomendasi materi yang paling pas buat kamu.
         </p>
       </div>
 

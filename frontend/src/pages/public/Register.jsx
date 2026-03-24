@@ -4,13 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-const API_URL = "http://localhost:5000/api/auth/login";
+const API_URL = "http://localhost:5000/api/auth/register";
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [rememberMe, setRememberMe] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -18,15 +22,21 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     setError("");
-    setLoading(true);
 
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setLoading(true);
     try {
       const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          name: formData.name,
           email: formData.email,
           password: formData.password,
         }),
@@ -35,14 +45,11 @@ const Login = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Invalid login credentials");
+        throw new Error(data.error?.message || data.message || "Registration failed");
       }
 
-      const storage = rememberMe ? localStorage : sessionStorage;
-      storage.setItem("userSession", JSON.stringify(data.session));
-      storage.setItem("userProfile", JSON.stringify(data.profile));
-
-      navigate("/welcome");
+      alert("Registration success! Please login.");
+      navigate("/login");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -57,14 +64,27 @@ const Login = () => {
           {/* Title */}
           <div className="text-center space-y-1">
             <h2 className="text-2xl font-bold text-gray-800">
-              Login to AdaptLearn
+              Register for AdaptLearn
             </h2>
             <p className="text-sm text-gray-500">
-              Please enter your details to access your account.
+              Create your account to start your learning journey.
             </p>
           </div>
 
           {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+
+          {/* Username */}
+          <div>
+            <label className="text-sm text-gray-600">Username</label>
+            <Input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter your username"
+              className="mt-1"
+            />
+          </div>
 
           {/* Email */}
           <div>
@@ -92,34 +112,42 @@ const Login = () => {
             />
           </div>
 
-          <div className="flex items-center space-x-2 text-sm text-gray-500">
-            <input 
-              type="checkbox" 
-              id="rememberMe"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="cursor-pointer"
+          {/* Confirm Password */}
+          <div>
+            <label className="text-sm text-gray-600">Confirm Password</label>
+            <Input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="••••••••"
+              className="mt-1"
             />
-            <label htmlFor="rememberMe" className="cursor-pointer">Remember Me</label>
+          </div>
+
+          {/* Terms */}
+          <div className="flex items-center space-x-2 text-sm text-gray-500">
+            <input type="checkbox" />
+            <span>I agree to the Terms of Service</span>
           </div>
 
           {/* Button */}
-          <Button 
-            onClick={handleLogin}
+          <Button
+            onClick={handleRegister}
             disabled={loading}
             className="w-full bg-orange-500 hover:bg-orange-600"
           >
-            {loading ? "Loading" : "Login"}
+            {loading ? "Loading" : "Register"}
           </Button>
 
-          {/* Bottom text */}
+          {/* Bottom */}
           <p className="text-sm text-center text-gray-500">
-            Don't have an account?{" "}
+            Already have an account?{" "}
             <span
-              onClick={() => navigate("/register")}
+              onClick={() => navigate("/login")}
               className="text-orange-500 cursor-pointer font-medium"
             >
-              Register
+              Login
             </span>
           </p>
         </CardContent>
@@ -128,4 +156,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
