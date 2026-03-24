@@ -60,9 +60,9 @@ function App() {
             isAuthenticated ? <LearningLayout /> : <Navigate to="/login" />
           }
         >
-          <Route path="/belajar/video/:id" element={<VisualLearningPage />} />
-          <Route path="/belajar/materi/:id" element = {<ReadingLearningPage />} />
-          {/* /belajar/materi/:id url parameternya(materi) itukah? */}
+          <Route path="/belajar/video/" element={<VisualLearningPage />} />
+          <Route path="/belajar/materi/" element = {<ReadingLearningPage />} />
+          {/* /belajar/materi/:materiId gini kepanjangan ga? */}
 
           {/* <Route path="/belajar/:id" element={<MaterialDetail />} /> */}
         </Route>

@@ -4,7 +4,7 @@ import { CheckCircle } from "lucide-react";
 const VisualLearningPage = () => {
   return (
     <div className="max-w-5xl mx-auto px-6 lg:px-8 flex flex-col items-center">
-      <div className="w-full mt-10 mb-10">
+      <div className="w-full mt-10 mb-10 items-center">
         <div className="w-full aspect-video bg-[#dbdbdb] rounded-[16px] lg:rounded-[24px]">
           {/* Video Gooes Here */}
         </div>

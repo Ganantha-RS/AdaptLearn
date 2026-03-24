@@ -15,10 +15,12 @@ const DashboardHome = () => {
       {/* Left Column */}
       <div className="lg:col-span-2 space-y-8 order-2 lg:order-1">
         <section>
-          <h2 className="text-primary font-bold text-lg mb-4 uppercase tracking-wide flex items-center gap-2 text-primary">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-            Lanjutkan Pembelajaran
-          </h2>
+          <div className="">
+            <h2 className="text-primary font-bold text-lg mb-4 uppercase tracking-wide flex items-center gap-2 text-primary">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+              Lanjutkan Pembelajaran
+            </h2>
+          </div>
 
           <Card className="bg-surface border-background-alt overflow-hidden">
             <CardContent className="p-6 flex flex-col sm:flex-row gap-6 items-center">
@@ -120,55 +122,64 @@ const DashboardHome = () => {
 
       {/* Right Column */}
       <div className="space-y-6 order-1 lg:order-2">
-        <Card className="bg-primary-light border-none relative overflow-hidden">
-          <CardContent className="p-6 relative z-10">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-20 h-20 rounded-full bg-white/40 border-4 border-white flex items-center justify-center overflow-hidden">
-                <svg
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="white"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
+
+        {/* Card Profil User */}
+        <Card className="bg-primary border-none overflow-hidden">
+          <CardContent className="p-6">
+
+            {/* Avatar + Info */}
+            <div className="flex items-center gap-4 mb-5">
+              <div className="w-16 h-16 rounded-full bg-white/30 border-4 border-white/60 flex items-center justify-center flex-shrink-0">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
                   <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" />
                 </svg>
               </div>
+
               <div>
-                <h3 className="text-white text-xl font-medium">
-                  Welcome Back!
-                </h3>
-                <h2 className="text-text-primary text-3xl font-extrabold -mt-1">
-                  Sarah
-                </h2>
-                <div className="inline-flex items-center gap-1.5 bg-background-alt/60 border border-primary/20 text-text-primary px-3 py-1 rounded-full text-xs font-bold mt-2">
-                  <Eye size={12} />
+                <p className="text-white/80 text-sm font-medium">Welcome Back!</p>
+                <h2 className="text-white text-2xl font-extrabold leading-tight">Sarah</h2>
+                <div className="inline-flex items-center gap-1.5 bg-white/20 text-white px-3 py-1 rounded-full text-xs font-semibold mt-1.5">
+                  <Eye size={11} />
                   Visual Learner
                 </div>
               </div>
             </div>
 
-            <div className="bg-white/90 backdrop-blur rounded-xl h-24 w-full mb-3 shadow-sm border-none shadow-none overflow-hidden">
-              <p className="p-4 line-clamp-3">Ini deskripsi dari user Ini deskripsi dari user Ini deskripsi dari user Ini deskripsi dari user Ini deskripsi dari user Ini deskripsi dari user Ini deskripsi dari user Ini deskripsi dari user Ini deskripsi dari user</p>
+            {/* Deskripsi */}
+            <div className="bg-white/20 rounded-xl p-4 mb-4">
+              <p className="text-white/90 text-sm leading-relaxed line-clamp-3">
+                Ini deskripsi dari user Ini deskripsi dari user Ini deskripsi dari user
+                Ini deskripsi dari user Ini deskripsi dari user Ini deskripsi dari user
+              </p>
             </div>
 
+            {/* View Profile */}
             <div className="flex justify-end">
-              <Button variant="link" className="text-primary-dark font-bold text-xs p-0 h-auto gap-1 hover:text-primary transition-colors">
-                View Profile <ArrowRight size={14} />
+              <Button
+                variant="link"
+                className="text-white/90 hover:text-white font-semibold text-xs p-0 h-auto gap-1"
+              >
+                View Profile <ArrowRight size={13} />
               </Button>
             </div>
+
           </CardContent>
         </Card>
 
-        <Card className="bg-background-alt border-none">
+        {/* Card Tips Hari Ini */}
+        <Card className="bg-amber-50 border border-amber-100">
           <CardContent className="p-6">
-            <h3 className="text-primary font-bold text-lg mb-3">Tips Hari Ini</h3>
-            <p className="text-text-primary font-medium text-sm leading-relaxed">
-              “Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam
-              commodo enim erat. Quisque facilisis porta mollis”
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-lg">💡</span>
+              <h3 className="text-primary font-bold text-base">Tips Hari Ini</h3>
+            </div>
+            <p className="text-gray-600 text-sm leading-relaxed italic">
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Nam commodo enim erat. Quisque facilisis porta mollis"
             </p>
           </CardContent>
         </Card>
+
       </div>
     </div>
   );

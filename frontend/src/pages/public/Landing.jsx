@@ -251,7 +251,7 @@ const Landing = () => {
         </section>
 
         {/* Hasil yang Sesuai Gaya Belajarmu */}
-        <section className="bg-orange-300 py-24">
+        <section className="bg-orange-300 pb-24">
           <div className="container mx-auto px-6">
             <Card className="max-w-4xl mx-auto bg-primary border-2 border-white/50 shadow-2xl">
               <CardContent className="p-12">
