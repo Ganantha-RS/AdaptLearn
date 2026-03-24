@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-=======
+
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
@@ -338,4 +337,4 @@ const Landing = () => {
 };
 
 export default Landing;
->>>>>>> 4fd257c008e7aaac255a652885594f4da9c9b0ff
+
