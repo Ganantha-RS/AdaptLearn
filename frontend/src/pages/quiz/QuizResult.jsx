@@ -1,131 +1,47 @@
 import React from 'react';
+import { FileText } from 'lucide-react'; 
 
 const QuizResult = () => {
-  const styles = {
-    mainWrapper: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100vh',
-      backgroundColor: '#f8f9fa',
-      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      padding: '20px'
-    },
-    topLabel: {
-      color: '#7f8c8d',
-      fontSize: '14px',
-      marginBottom: '15px',
-      fontWeight: '500'
-    },
-    outerBorder: {
-      backgroundColor: '#ffffff',
-      padding: '20px',
-      border: '2px solid #3498db', 
-      borderRadius: '4px',
-      width: '100%',
-      maxWidth: '360px',
-      boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-    },
-    innerDashedBox: {
-      border: '1px dashed #bdc3c7', 
-      padding: '30px 20px',
-      textAlign: 'center',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center'
-    },
-    // INI BAGIAN YANG DI-DESAIN ULANG (TETAP ORANYE):
-    analysisText: {
-      backgroundColor: '#fff3e0', // Oranye sangat muda (peach) untuk background
-      color: '#e67e22',           // Oranye tua (sesuai kode asli kamu) untuk teks
-      padding: '6px 20px',
-      borderRadius: '50px',       // Biar bentuknya kapsul modern
-      fontSize: '11px',
-      fontWeight: 'bold',
-      letterSpacing: '2px',
-      marginBottom: '20px',
-      border: '1px solid #ffe0b2', // Garis pinggir tipis biar makin rapi
-      display: 'inline-block'
-    },
-    icon: {
-      fontSize: '30px',
-      marginBottom: '10px'
-    },
-    mainTitle: {
-      fontSize: '26px',
-      color: '#2c3e50',
-      margin: '0',
-      fontWeight: 'bold'
-    },
-    levelText: {
-      color: '#95a5a6',
-      fontSize: '14px',
-      marginTop: '5px',
-      marginBottom: '25px'
-    },
-    description: {
-      fontSize: '13px',
-      color: '#7f8c8d',
-      lineHeight: '1.6',
-      marginBottom: '30px'
-    },
-    btnPrimary: {
-      backgroundColor: '#f39c12',
-      color: 'white',
-      border: 'none',
-      padding: '14px 20px',
-      width: '100%',
-      borderRadius: '10px',
-      fontWeight: 'bold',
-      fontSize: '12px',
-      cursor: 'pointer',
-      marginBottom: '15px'
-    },
-    btnRetry: {
-      background: 'none',
-      border: 'none',
-      color: '#bdc3c7',
-      fontSize: '11px',
-      letterSpacing: '1px',
-      cursor: 'pointer',
-      textDecoration: 'none',
-      textTransform: 'uppercase'
-    }
-  };
-
   return (
-    <div style={styles.mainWrapper}>
-      <p style={styles.topLabel}>Quiz Result - Text Enjoyer</p>
+    // Background putih bersih, tanpa label atas
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white p-5 font-sans">
       
-      <div style={styles.outerBorder}>
-        <div style={styles.innerDashedBox}>
-          {/* Bagian yang didesain ulang jadi kapsul oranye */}
-          <span style={styles.analysisText}>HASIL ANALISA</span>
-          
-          <div style={styles.icon}>📄</div>
-          
-          <h1 style={styles.mainTitle}>Text Enjoyer</h1>
-          <p style={styles.levelText}>Beginner Level</p>
-
-          <p style={styles.description}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-            Maecenas vel metus efficitur ex tincidunt gravida tristique vitae velit. 
-            In vitae lacus elementum, varius ipsum in, tincidunt augue.
-          </p>
-
-          <button 
-            style={styles.btnPrimary}
-            onMouseOver={(e) => e.target.style.opacity = '0.9'}
-            onMouseOut={(e) => e.target.style.opacity = '1'}
-          >
-            LIHAT REKOMENDASI MATERI
-          </button>
-          
-          <button style={styles.btnRetry}>
-            ULANGI KUIS
-          </button>
+      {/* Container utama - Border biru & garis putus-putus SUDAH DIHAPUS */}
+      <div className="w-full max-w-[360px] flex flex-col items-center text-center">
+        
+        {/* Label Kapsul Oranye */}
+        <span className="bg-[#fff3e0] text-[#e67e22] px-6 py-1.5 rounded-full text-[11px] font-bold tracking-[2px] mb-6 border border-[#ffe0b2]">
+          HASIL ANALISA
+        </span>
+        
+        {/* Ikon */}
+        <div className="text-[#2c3e50] mb-4">
+          <FileText size={48} strokeWidth={1.5} />
         </div>
+        
+        {/* Judul & Level */}
+        <h1 className="text-3xl text-[#2c3e50] font-bold mb-1">
+          Text Enjoyer
+        </h1>
+        <p className="text-[#95a5a6] text-sm mb-6">
+          Beginner Level
+        </p>
+
+        {/* Deskripsi */}
+        <p className="text-[13px] text-[#7f8c8d] leading-relaxed mb-10">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+          Maecenas vel metus efficitur ex tincidunt gravida tristique vitae velit. 
+        </p>
+
+        {/* Tombol Utama */}
+        <button className="bg-[#f39c12] hover:bg-[#e67e22] text-white py-4 px-5 w-full rounded-xl font-bold text-[12px] transition-all shadow-md active:scale-95">
+          LIHAT REKOMENDASI MATERI
+        </button>
+        
+        {/* Tombol Ulangi */}
+        <button className="mt-6 text-[#bdc3c7] hover:text-[#95a5a6] text-[11px] tracking-widest uppercase font-medium transition-colors">
+          ULANGI KUIS
+        </button>
       </div>
     </div>
   );
