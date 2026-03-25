@@ -1,69 +1,103 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const AssessmentLevel = () => {
   const navigate = useNavigate();
+  const [selected, setSelected] = useState(null);
 
   const levels = [
     {
       id: "beginner",
-      title: "Pemula (Beginner)",
-      desc: "Saya baru mulai belajar topik ini",
-      icon: "🌱",
+      text: "Pemula\nSaya baru mulai belajar",
     },
     {
       id: "intermediate",
-      title: "Menengah (Intermediate)",
-      desc: "Saya sudah tahu dasarnya",
-      icon: "🌿",
+      text: "Menengah\nSudah memahami dasar",
     },
     {
       id: "advanced",
-      title: "Mahir (Advanced)",
-      desc: "Saya ingin tantangan lebih",
-      icon: "🌳",
+      text: "Mahir\nSiap dengan tantangan",
+    },
+    {
+      id: "expert",
+      text: "Expert\nIngin materi tingkat tinggi",
     },
   ];
 
   return (
-    <div className="space-y-8 pt-6 animate-in fade-in slide-in-from-right-4 duration-500">
-      <div className="space-y-2">
-        <span className="text-primary font-bold text-sm tracking-wider uppercase">
-          Langkah Terakhir
-        </span>
-        <h2 className="text-2xl font-bold text-text-primary leading-tight">
-          Pilih level pemahamanmu saat ini
-        </h2>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-[#FFF6F2] p-6">
+      
+      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-lg p-6 space-y-6">
 
-      <div className="space-y-4">
-        {levels.map((level) => (
+        {/* Header */}
+        <div className="space-y-2">
+          <span className="text-orange-400 font-bold text-sm tracking-wider uppercase">
+            Langkah Terakhir
+          </span>
+          <h2 className="text-lg font-semibold text-gray-800">
+            Pilih level pemahamanmu saat ini
+          </h2>
+        </div>
+
+        {/* Options GRID 2x2 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {levels.map((level) => (
+            <button
+              key={level.id}
+              onClick={() => setSelected(level.id)}
+              className={`flex items-start gap-3 p-5 border rounded-xl text-left transition-all whitespace-pre-line
+                ${
+                  selected === level.id
+                    ? "border-orange-400 bg-orange-50"
+                    : "border-orange-200 hover:border-orange-400 hover:bg-orange-50"
+                }`}
+            >
+              {/* BULATAN */}
+              <div
+                className={`w-5 h-5 rounded-full border flex items-center justify-center mt-1
+                  ${
+                    selected === level.id
+                      ? "border-orange-400"
+                      : "border-orange-300"
+                  }`}
+              >
+                {selected === level.id && (
+                  <div className="w-2.5 h-2.5 bg-orange-400 rounded-full"></div>
+                )}
+              </div>
+
+              {/* TEXT */}
+              <span className="text-gray-800 text-sm font-medium">
+                {level.text}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-between items-center pt-2">
           <button
-            key={level.id}
-            onClick={() => navigate("/analyzing")}
-            className="group w-full flex items-center p-6 bg-white border-2 border-slate-100 rounded-3xl text-left transition-all duration-300 hover:border-primary hover:bg-surface-tint active:scale-[0.98] cursor-pointer"
+            onClick={() => navigate("/quiz-style")}
+            className="text-orange-300 text-sm hover:text-orange-500 transition"
           >
-            <div className="text-4xl mr-6 transform group-hover:scale-110 transition-transform">
-              {level.icon}
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-bold text-text-primary mb-1">
-                {level.title}
-              </h3>
-              <p className="text-text-secondary text-sm">{level.desc}</p>
-            </div>
-            <div className="w-8 h-8 rounded-full border-2 border-slate-200 flex items-center justify-center group-hover:border-primary group-hover:bg-primary transition-colors">
-              <div className="w-2 h-2 bg-white rounded-full opacity-0 group-hover:opacity-100" />
-            </div>
+            ← Kembali
           </button>
-        ))}
-      </div>
 
-      <button
-        onClick={() => navigate("/quiz-style")}
-        className="text-text-secondary font-semibold hover:text-text-primary transition-colors mt-4"
-      >
-        Kembali
-      </button>
+          <button
+            onClick={() => navigate("/analyzing")}
+            className={`px-5 py-2 rounded-lg text-white transition
+              ${
+                selected
+                  ? "bg-orange-400 hover:bg-orange-500"
+                  : "bg-orange-200 cursor-not-allowed"
+              }`}
+            disabled={!selected}
+          >
+            Lanjut
+          </button>
+        </div>
+
+      </div>
     </div>
   );
 };

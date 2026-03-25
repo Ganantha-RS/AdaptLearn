@@ -3,45 +3,45 @@ import { FileText } from 'lucide-react';
 
 const QuizResult = () => {
   return (
-    // Background putih bersih, tanpa label atas
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white p-5 font-sans">
+    <div className="min-h-screen flex items-center justify-center bg-[#FFF6F2] p-6 font-sans">
       
-      {/* Container utama - Border biru & garis putus-putus SUDAH DIHAPUS */}
-      <div className="w-full max-w-[360px] flex flex-col items-center text-center">
+      {/* Card */}
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 text-center flex flex-col items-center">
         
-        {/* Label Kapsul Oranye */}
-        <span className="bg-[#fff3e0] text-[#e67e22] px-6 py-1.5 rounded-full text-[11px] font-bold tracking-[2px] mb-6 border border-[#ffe0b2]">
+        {/* Label */}
+        <span className="bg-orange-100 text-orange-500 px-5 py-1 rounded-full text-xs font-bold tracking-widest mb-5 border border-orange-200">
           HASIL ANALISA
         </span>
         
-        {/* Ikon */}
-        <div className="text-[#2c3e50] mb-4">
-          <FileText size={48} strokeWidth={1.5} />
+        {/* Icon */}
+        <div className="text-orange-400 mb-3">
+          <FileText size={44} strokeWidth={1.5} />
         </div>
         
-        {/* Judul & Level */}
-        <h1 className="text-3xl text-[#2c3e50] font-bold mb-1">
+        {/* Title */}
+        <h1 className="text-2xl text-gray-800 font-bold mb-1">
           Text Enjoyer
         </h1>
-        <p className="text-[#95a5a6] text-sm mb-6">
+        <p className="text-gray-400 text-sm mb-5">
           Beginner Level
         </p>
 
-        {/* Deskripsi */}
-        <p className="text-[13px] text-[#7f8c8d] leading-relaxed mb-10">
+        {/* Description */}
+        <p className="text-xs text-gray-500 leading-relaxed mb-8">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-          Maecenas vel metus efficitur ex tincidunt gravida tristique vitae velit. 
+          Maecenas vel metus efficitur ex tincidunt gravida tristique vitae velit.
         </p>
 
-        {/* Tombol Utama */}
-        <button className="bg-[#f39c12] hover:bg-[#e67e22] text-white py-4 px-5 w-full rounded-xl font-bold text-[12px] transition-all shadow-md active:scale-95">
+        {/* Button */}
+        <button className="bg-orange-400 hover:bg-orange-500 text-white py-3 px-4 w-full rounded-xl font-bold text-xs transition-all active:scale-95 shadow-md">
           LIHAT REKOMENDASI MATERI
         </button>
         
-        {/* Tombol Ulangi */}
-        <button className="mt-6 text-[#bdc3c7] hover:text-[#95a5a6] text-[11px] tracking-widest uppercase font-medium transition-colors">
+        {/* Retry */}
+        <button className="mt-5 text-orange-400 hover:text-orange-500 text-xs tracking-widest uppercase font-medium transition-colors">
           ULANGI KUIS
         </button>
+
       </div>
     </div>
   );

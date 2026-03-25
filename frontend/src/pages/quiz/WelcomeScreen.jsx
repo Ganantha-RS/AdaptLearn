@@ -4,31 +4,51 @@ const WelcomeScreen = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col items-center text-center space-y-8 pt-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="w-64 h-64 bg-surface-tint rounded-3xl flex items-center justify-center border-2 border-primary-light/30 shadow-xl shadow-primary/5">
-        <div className="text-6xl">🚀</div>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-[#FFF6F2] p-6">
+      
+      {/* Card */}
+      <div className="flex flex-col md:flex-row bg-white rounded-3xl shadow-xl overflow-hidden max-w-4xl w-full">
+        
+        {/* Image Section */}
+        <div className="md:w-1/2 h-64 md:h-auto">
+          <img
+            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
+            alt="Learning"
+            className="w-full h-full object-cover"
+          />
+        </div>
 
-      <div className="space-y-4">
-        <h2 className="text-3xl font-extrabold text-text-primary tracking-tight">
-          Mulai Petualangan Belajarmu!
-        </h2>
-        <p className="text-text-secondary text-lg max-w-sm mx-auto leading-relaxed">
-          Kami akan membantumu menemukan gaya belajar yang paling cocok dan
-          level materi yang tepat untukmu.
-        </p>
-      </div>
+        {/* Content Section */}
+        <div className="md:w-1/2 p-8 flex flex-col justify-center space-y-5">
+          
+          <p className="text-sm text-orange-400 font-semibold">
+            QUIZ ADAPTIVE LEARNING
+          </p>
 
-      <div className="w-full pt-4">
-        <button
-          onClick={() => navigate("/quiz-style")}
-          className="w-full py-4 bg-primary hover:bg-primary-dark text-white font-bold rounded-2xl shadow-lg shadow-primary/30 transition-all duration-300 transform hover:scale-[1.02] active:scale-95 cursor-pointer"
-        >
-          Siap, Mulai Sekarang!
-        </button>
-        <p className="mt-4 text-sm text-text-secondary">
-          Hanya butuh waktu sekitar 5-10 menit.
-        </p>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-gray-800 leading-tight">
+            Let's Personalize Your Journey
+          </h2>
+
+          <p className="text-gray-500 text-sm md:text-base leading-relaxed">
+            Answer a few questions so we can tailor the learning experience to
+            match your strengths.
+          </p>
+
+          {/* FIXED: button + text sejajar */}
+          <div className="mt-4 flex items-center gap-4">
+            <button
+              onClick={() => navigate("/quiz-style")}
+              className="px-6 py-3 bg-orange-400 hover:bg-orange-500 text-white font-semibold rounded-full shadow-md transition-all duration-300"
+            >
+              Get Started →
+            </button>
+
+            <p className="text-sm text-gray-400 leading-none">
+              Takes only 2 minutes
+            </p>
+          </div>
+
+        </div>
       </div>
     </div>
   );
