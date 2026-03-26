@@ -1,10 +1,10 @@
 import express from "express"
-import { submitQuiz } from "../controllers/quizController.js"
-import { getQuiz } from "../controllers/quizController.js"
+import { submitQuiz, getQuiz, submitQuizResult } from "../controllers/quizController.js"
 
 const router = express.Router()
 
 router.post("/submit", submitQuiz)
 router.get("/questions", getQuiz)
+router.post("/submit-result", submitQuizResult)
 
 export default router

@@ -67,7 +67,10 @@ const StyleIdentification = () => {
         </button>
 
         <Button
-          onClick={() => navigate("/quiz-level")}
+          onClick={() => {
+            localStorage.setItem("learningStyle", selected);
+            navigate("/quiz-level");
+          }}
           disabled={!selected}
           className={`h-14 px-10 rounded-2xl text-white font-black text-sm transition-all shadow-lg ${
             selected

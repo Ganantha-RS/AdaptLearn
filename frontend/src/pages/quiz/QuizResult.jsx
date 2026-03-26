@@ -1,9 +1,86 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 const QuizResult = () => {
   const navigate = useNavigate();
+  
+  const [style] = useState(() => localStorage.getItem("learningStyle") || "text");
+  
+  const [resultData] = useState(() => {
+    const savedResultsStr = localStorage.getItem("quizResults");
+    const savedResults = savedResultsStr ? JSON.parse(savedResultsStr) : [];
+    
+    let correctCount = 0;
+    let difficultyScore = 0;
+    
+    savedResults.forEach(r => {
+      const d = r.difficulty || "Easy";
+      if (r.isCorrect) {
+        correctCount += 1;
+        const diff = d.toLowerCase();
+        if (diff === "easy") difficultyScore += 1;
+        else if (diff === "medium") difficultyScore += 2;
+        else if (diff === "hard") difficultyScore += 3;
+        else if (diff === "extreme" || diff === "expert") difficultyScore += 4;
+        else difficultyScore += 1;
+      }
+    });
+
+    const totalQ = savedResults.length;
+    let computedLevel = "Beginner Level"; // Default
+    if (totalQ > 0) {
+      const ratio = correctCount / totalQ;
+      // If correct 0/10 or score reach 15pts(10 * 1.5)
+      if (ratio >= 0.9 || difficultyScore >= (totalQ * 1.5)) {
+        computedLevel = "Advanced Level";
+      } else if (ratio >= 0.45) {
+        computedLevel = "Intermediate Level";
+      }
+    }
+
+    return {
+      level: computedLevel,
+      correct: correctCount,
+      total: totalQ
+    };
+  });
+
+  useEffect(() => {
+    const syncResults = async () => {
+      try {
+        const profileStr = localStorage.getItem("userProfile") || sessionStorage.getItem("userProfile");
+        if (!profileStr) return;
+
+        const profile = JSON.parse(profileStr);
+        const userId = profile.id;
+
+        if (!userId) return;
+
+        await fetch("http://localhost:5000/api/quiz/submit-result", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId,
+            learning_style: style,
+            skill_level: resultData.level,
+          }),
+        });
+      } catch (err) {
+        console.error("Failed to sync quiz results:", err);
+      }
+    };
+
+    syncResults();
+  }, [style, resultData.level]);
+
+  const styleTitle = style === "visual" ? "Visual Learner" : "Text Enjoyer";
+  const styleIcon = style === "visual" ? "▶️" : "📄";
+  
+  const description = style === "visual"
+    ? `Kamu berhasil menjawab ${resultData.correct} dari ${resultData.total} pertanyaan dengan benar. Berdasarkan preferensimu, kamu lebih cocok belajar menggunakan pendekatan visual dan auditorial seperti video tutorial atau demonstrasi grafis.`
+    : `Kamu berhasil menjawab ${resultData.correct} dari ${resultData.total} pertanyaan dengan benar. Preferensimu menunjukkan kekuatan pada teks, sehingga kami sangat merekomendasikan bahan bacaan dan dokumentasi terstruktur untuk mempercepat belajarmu.`;
 
   return (
     <div className="flex items-center justify-center w-full max-w-3xl mx-auto animate-in fade-in zoom-in-95 duration-700">
@@ -14,20 +91,18 @@ const QuizResult = () => {
         </div>
         
         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-           <span className="text-3xl text-primary">📄</span>
+           <span className="text-3xl text-primary">{styleIcon}</span>
         </div>
         
         <h1 className="text-4xl text-text-primary font-black mb-2 tracking-tight">
-          Text Enjoyer
+          {styleTitle}
         </h1>
         <p className="text-text-secondary text-[16px] font-bold mb-10">
-          Beginner Level
+          {resultData.level}
         </p>
 
         <p className="text-[15px] text-text-primary/70 leading-loose mb-12 max-w-[520px]">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vel metus 
-          efficitur ex tincidunt gravida tristique vitae velit. In vitae lacus elementum, 
-          varius ipsum in, tincidunt augue.
+          {description}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-5 w-full">
