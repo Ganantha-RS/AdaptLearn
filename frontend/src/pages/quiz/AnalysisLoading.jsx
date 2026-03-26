@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Card } from "@/components/ui/card";
 
 const AnalysisLoading = () => {
   const navigate = useNavigate();
@@ -12,39 +13,34 @@ const AnalysisLoading = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FFF6F2] p-6">
-      
-      {/* Card */}
-      <div className="bg-white w-full max-w-md rounded-2xl shadow-lg p-8 flex flex-col items-center text-center space-y-6">
-
-        {/* Loader */}
+    <div className="flex items-center justify-center w-full max-w-[500px] mx-auto animate-in fade-in duration-500">
+      <Card className="w-full bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-none p-12 flex flex-col items-center text-center space-y-8">
+        
         <div className="relative">
-          <div className="w-24 h-24 border-4 border-orange-200 rounded-full animate-ping absolute" />
-          <div className="w-24 h-24 border-4 border-orange-400 border-t-transparent rounded-full animate-spin" />
-          <div className="absolute inset-0 flex items-center justify-center text-2xl">
+          <div className="w-28 h-28 border-[5px] border-background-alt rounded-full animate-ping absolute opacity-50" />
+          <div className="w-28 h-28 border-[5px] border-primary border-t-transparent rounded-full animate-spin" />
+          <div className="absolute inset-0 flex items-center justify-center text-4xl">
             🧠
           </div>
         </div>
 
-        {/* Text */}
-        <div className="space-y-2">
-          <h2 className="text-lg font-bold text-gray-800 animate-pulse">
+        <div className="space-y-4">
+          <h2 className="text-[1.4rem] font-extrabold text-text-primary animate-pulse tracking-tight">
             Menganalisis Profilmu...
           </h2>
-          <p className="text-sm text-gray-500 max-w-xs">
-            Kami sedang menyusun rekomendasi materi yang paling pas buat kamu.
+          <p className="text-text-secondary text-[14.5px] leading-relaxed max-w-[280px]">
+            AI kami sedang menyusun rekomendasi materi yang paling pas buat kamu.
           </p>
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full h-1.5 bg-orange-100 rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-background-alt rounded-full overflow-hidden mt-4">
           <div
-            className="h-full bg-orange-400 animate-[loading_3s_ease-in-out_infinite]"
+            className="h-full bg-primary rounded-full animate-[loading_3s_ease-in-out_infinite]"
             style={{ width: "100%" }}
           />
         </div>
-
-      </div>
+        
+      </Card>
     </div>
   );
 };
