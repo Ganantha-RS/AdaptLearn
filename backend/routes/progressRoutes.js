@@ -1,8 +1,16 @@
-import express from "express"
-import { saveProgress } from "../controllers/progressController.js"
+import express from "express";
+import {
+  saveProgress,
+  getProgress,
+  getProgressSummary,
+  reassessLevel,
+} from "../controllers/progressController.js";
 
-const router = express.Router()
+const router = express.Router();
 
-router.post("/save", saveProgress)
+router.post("/save", saveProgress);
+router.post("/reassess", reassessLevel);
+router.get("/:user_id/summary", getProgressSummary);
+router.get("/:user_id", getProgress);
 
-export default router
+export default router;

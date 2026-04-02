@@ -1,12 +1,14 @@
-import express from "express"
+import express from "express";
 import {
+  getRecommendations,
   getYoutubeMaterials,
-  getTextMaterials
-} from "../controllers/recommendationController.js"
+  getRelatedMaterials,
+} from "../controllers/recommendationController.js";
 
-const router = express.Router()
+const router = express.Router();
 
-router.get("/video", getYoutubeMaterials)
-router.get("/text", getTextMaterials)
+router.get("/video", getYoutubeMaterials);
+router.get("/materials", getRelatedMaterials);
+router.get("/:user_id", getRecommendations);
 
-export default router
+export default router;

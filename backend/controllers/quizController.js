@@ -8,7 +8,6 @@ export const submitQuizResult = async (req, res) => {
     return res.status(400).json({ message: "User ID is required" })
   }
 
-  // Map frontend values to database ENUM types
   const styleMap = {
     "visual": "Visual",
     "text": "Teks"
@@ -56,6 +55,7 @@ export const submitQuiz = async (req, res) => {
         skill_level
       }
     ])
+    .select()
 
   if (error) {
     return res.status(500).json(error)

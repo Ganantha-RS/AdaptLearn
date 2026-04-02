@@ -3,7 +3,6 @@ import { supabase } from "../config/supabaseClient.js";
 export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
 
-  // Using Supabase Auth
   try {
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
@@ -28,7 +27,6 @@ export const registerUser = async (req, res) => {
             id: userId,
             name: name,
             email: email,
-            // learning_style and skill_level coming soon
           },
         ]);
 
