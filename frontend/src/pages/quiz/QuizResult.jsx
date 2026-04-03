@@ -47,6 +47,8 @@ const QuizResult = () => {
     };
   });
 
+  const [countdown, setCountdown] = useState(0);
+
   useEffect(() => {
     const syncResults = async () => {
       try {
@@ -58,7 +60,7 @@ const QuizResult = () => {
 
         if (!userId) return;
 
-        await fetch("http://localhost:5000/api/quiz/submit-result", {
+        const response = await fetch("http://localhost:5000/api/quiz/submit-result", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -67,6 +69,22 @@ const QuizResult = () => {
             skill_level: resultData.level,
           }),
         });
+
+        if (response.ok) {
+          // Update local profile
+          const updatedProfile = { 
+            ...profile, 
+            needs_reassessment: false, 
+            skill_level: resultData.level.replace(" Level", "") === "Advanced" ? "Mahir" : 
+                         resultData.level.replace(" Level", "") === "Intermediate" ? "Menengah" : "Pemula",
+            learning_style: style === "visual" ? "Visual" : "Teks"
+          };
+          const storage = localStorage.getItem("userSession") ? localStorage : sessionStorage;
+          storage.setItem("userProfile", JSON.stringify(updatedProfile));
+          
+          // cooldown timer
+          setCountdown(60);
+        }
       } catch (err) {
         console.error("Failed to sync quiz results:", err);
       }
@@ -74,6 +92,13 @@ const QuizResult = () => {
 
     syncResults();
   }, [style, resultData.level]);
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
 
   const styleTitle = style === "visual" ? "Visual Learner" : "Text Enjoyer";
   const styleIcon = style === "visual" ? "▶️" : "📄";
@@ -107,16 +132,25 @@ const QuizResult = () => {
 
         <div className="flex flex-col sm:flex-row gap-5 w-full">
           <Button 
+            onClick={() => window.location.href = "/dashboard"}
             className="bg-primary hover:bg-primary-dark text-white h-16 flex-[1.5] rounded-full font-black text-[15px] transition-all shadow-xl shadow-primary/25"
           >
             LIHAT REKOMENDASI MATERI <span className="ml-2 font-normal text-2xl">→</span>
           </Button>
           
           <button 
-            onClick={() => navigate("/welcome")}
-            className="bg-white hover:bg-slate-50 text-text-secondary h-16 flex-1 rounded-full border-2 border-slate-100/60 text-[15px] font-black uppercase transition-all"
+            disabled={countdown > 0}
+            onClick={() => {
+              localStorage.removeItem("quizResults");
+              navigate("/welcome");
+            }}
+            className={`h-16 flex-1 rounded-full border-2 text-[15px] font-black uppercase transition-all ${
+              countdown > 0 
+                ? "bg-gray-50 border-gray-100 text-gray-400 cursor-not-allowed" 
+                : "bg-white hover:bg-slate-50 border-slate-100/60 text-text-secondary"
+            }`}
           >
-            ULANGI KUIS
+            {countdown > 0 ? `Coba Lagi (${countdown}s)` : "Ulangi Kuis"}
           </button>
         </div>
 

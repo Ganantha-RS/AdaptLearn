@@ -6,6 +6,7 @@ import logo from '../assets/logo-adaptlearn.webp';
 
 const MainLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const isAuthenticated = !!localStorage.getItem("userSession") || !!sessionStorage.getItem("userSession");
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -30,16 +31,26 @@ const MainLayout = () => {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex gap-3 items-center">
-            <Link to="/login">
-              <button className="bg-white border-2 border-primary text-orange-400 px-5 py-2 rounded-full font-semibold hover:bg-orange-50 transition">
-                Login
-              </button>
-            </Link>
-            <Link to="/register">
-              <button className="bg-orange-400 text-white px-5 py-2 rounded-full font-semibold hover:bg-orange-600 transition shadow-md">
-                Register →
-              </button>
-            </Link>
+            {isAuthenticated ? (
+              <Link to="/dashboard">
+                <button className="bg-orange-400 text-white px-5 py-2 rounded-full font-semibold hover:bg-orange-600 transition shadow-md">
+                  Dashboard →
+                </button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login">
+                  <button className="bg-white border-2 border-primary text-orange-400 px-5 py-2 rounded-full font-semibold hover:bg-orange-50 transition">
+                    Login
+                  </button>
+                </Link>
+                <Link to="/register">
+                  <button className="bg-orange-400 text-white px-5 py-2 rounded-full font-semibold hover:bg-orange-600 transition shadow-md">
+                    Register →
+                  </button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Hamburger Button */}
@@ -60,22 +71,32 @@ const MainLayout = () => {
               <a href="#fitur" className="hover:text-orange-500 transition py-2">Fitur</a>
             </div>
             <div className="flex flex-col gap-3 pt-4 border-t border-gray-200">
-              <Link to="/login">
-                <button className="w-full bg-white border-2 border-primary text-orange-400 px-5 py-2 rounded-full font-semibold hover:bg-orange-50 transition">
-                  Login
-                </button>
-              </Link>
-              <Link to="/register">
-                <button className="w-full bg-orange-400 text-white px-5 py-2 rounded-full font-semibold hover:bg-orange-600 transition shadow-md">
-                  Register →
-                </button>
-              </Link>
+              {isAuthenticated ? (
+                <Link to="/dashboard">
+                  <button className="w-full bg-orange-400 text-white px-5 py-2 rounded-full font-semibold hover:bg-orange-600 transition shadow-md">
+                    Dashboard →
+                  </button>
+                </Link>
+              ) : (
+                <>
+                  <Link to="/login">
+                    <button className="w-full bg-white border-2 border-primary text-orange-400 px-5 py-2 rounded-full font-semibold hover:bg-orange-50 transition">
+                      Login
+                    </button>
+                  </Link>
+                  <Link to="/register">
+                    <button className="w-full bg-orange-400 text-white px-5 py-2 rounded-full font-semibold hover:bg-orange-600 transition shadow-md">
+                      Register →
+                    </button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}
       </nav>
       
-      <main className="flex-grow">
+      <main className="grow">
         {/* Halaman Landing/Login */}
         <Outlet /> 
       </main>

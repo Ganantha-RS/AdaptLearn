@@ -22,23 +22,36 @@ export const submitQuizResult = async (req, res) => {
   const dbStyle = styleMap[learning_style] || "Teks";
   const dbLevel = levelMap[skill_level] || "Pemula";
 
-  const { data, error } = await supabase
+  // Update User
+  const { data: updateData, error: updateError } = await supabase
     .from("users")
     .update({
       learning_style: dbStyle,
-      skill_level: dbLevel
+      skill_level: dbLevel,
+      needs_reassessment: false,
+      last_quiz_at: new Date().toISOString()
     })
-    .eq("id", userId)
+    .eq("id", userId);
 
-  if (error) {
-    console.error("Database update error details:", error);
-    return res.status(500).json(error)
+  if (updateError) {
+    console.error("Database update error details:", updateError);
+    return res.status(500).json(updateError);
+  }
+
+  // Reset Progress (user_progress)
+  const { error: resetError } = await supabase
+    .from("user_progress")
+    .delete()
+    .eq("user_id", userId);
+
+  if (resetError) {
+    console.error("Progress reset error:", resetError);
   }
 
   res.json({
-    message: "User assessment saved successfully",
-    data
-  })
+    message: "User assessment saved and progress reset successfully",
+    data: updateData
+  });
 }
 
 export const submitQuiz = async (req, res) => {

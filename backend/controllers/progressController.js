@@ -1,12 +1,14 @@
 import { supabase } from "../config/supabaseClient.js";
-import { MATERIALS, LEVEL_NEXT, LEVEL_PREV } from "../data/materials.js";
+
+const LEVEL_NEXT = { Pemula: "Menengah", Menengah: "Mahir", Mahir: null };
+const LEVEL_PREV = { Pemula: null, Menengah: "Pemula", Mahir: "Menengah" };
 
 export const saveProgress = async (req, res) => {
   try {
-    const { user_id, material_id, status } = req.body;
+    const { user_id, material_id, external_id, video_metadata, status } = req.body;
 
-    if (!user_id || !material_id || !status) {
-      return res.status(400).json({ success: false, message: "user_id, material_id, dan status wajib diisi" });
+    if (!user_id || (!material_id && !external_id) || !status) {
+      return res.status(400).json({ success: false, message: "user_id, material_id (or external_id), dan status wajib diisi" });
     }
 
     const validStatus = ["in_progress", "completed", "not_started"];
@@ -14,30 +16,66 @@ export const saveProgress = async (req, res) => {
       return res.status(400).json({ success: false, message: "Status tidak valid. Gunakan: not_started, in_progress, completed" });
     }
 
+    let finalMaterialId = material_id;
+
+    if (!finalMaterialId && external_id) {
+      const { data: existingMaterial } = await supabase
+        .from("materials")
+        .select("id")
+        .eq("external_id", external_id)
+        .single();
+        
+      if (existingMaterial) {
+        finalMaterialId = existingMaterial.id;
+      } else if (video_metadata) {
+        const { data: newMaterial, error: insertError } = await supabase
+          .from("materials")
+          .insert([{
+            title: video_metadata.title,
+            external_id: external_id,
+            format: "Video",
+            source_api: "YouTube",
+            thumbnail: video_metadata.thumbnail,
+            level: video_metadata.level || "Pemula",
+            topic: video_metadata.topic || "Umum"
+          }])
+          .select("id")
+          .single();
+          
+        if (insertError) return res.status(500).json({ success: false, error: insertError });
+        finalMaterialId = newMaterial.id;
+      } else {
+        return res.status(400).json({ success: false, message: "Video metadata dibutuhkan untuk materi baru" });
+      }
+    }
+
     const { data: existing } = await supabase
       .from("user_progress")
-      .select("id")
+      .select("id, status")
       .eq("user_id", user_id)
-      .eq("material_id", material_id)
+      .eq("material_id", finalMaterialId)
       .single();
 
     let result;
     if (existing) {
-      const updateData = { status };
+      if (existing.status === "completed" && status === "in_progress") {
+        return res.json({ success: true, message: "Progress dipertahankan karena sudah completed", data: existing });
+      }
+
+      const updateData = { status, updated_at: new Date().toISOString() };
       if (status === "completed") updateData.completed_at = new Date().toISOString();
 
       const { data, error } = await supabase
         .from("user_progress")
         .update(updateData)
-        .eq("user_id", user_id)
-        .eq("material_id", material_id)
+        .eq("id", existing.id)
         .select()
         .single();
 
       if (error) return res.status(500).json({ success: false, error });
       result = data;
     } else {
-      const insertData = { user_id, material_id, status };
+      const insertData = { user_id, material_id: finalMaterialId, status, updated_at: new Date().toISOString() };
       if (status === "completed") insertData.completed_at = new Date().toISOString();
 
       const { data, error } = await supabase
@@ -48,6 +86,36 @@ export const saveProgress = async (req, res) => {
 
       if (error) return res.status(500).json({ success: false, error });
       result = data;
+    }
+
+    if (status === "completed") {
+      // material
+      const { data: matData } = await supabase.from("materials").select("level").eq("id", finalMaterialId).single();
+      const matLevel = matData?.level;
+
+      // user current level
+      const { data: userData } = await supabase.from("users").select("skill_level").eq("id", user_id).single();
+      const userLevel = userData?.skill_level;
+
+      // if material level matches user current level (and not Mahir)
+      if (matLevel === userLevel && userLevel !== "Mahir") {
+        const { data: progressData } = await supabase
+          .from("user_progress")
+          .select("material_id")
+          .eq("user_id", user_id)
+          .eq("status", "completed");
+
+        const completedIds = (progressData || []).map(p => p.material_id);
+        const { count } = await supabase
+          .from("materials")
+          .select("id", { count: 'exact', head: true })
+          .in("id", completedIds)
+          .eq("level", userLevel);
+
+        if (count > 0 && count % 5 === 0) {
+          await supabase.from("users").update({ needs_reassessment: true }).eq("id", user_id);
+        }
+      }
     }
 
     res.json({ success: true, message: "Progress disimpan", data: result });
@@ -71,13 +139,16 @@ export const getProgress = async (req, res) => {
     const progressMap = {};
     (data || []).forEach((p) => (progressMap[p.material_id] = p));
 
+    const { data: mats, error: matsError } = await supabase.from("materials").select("*");
+    if (matsError) throw matsError;
+    const MATERIALS = mats || [];
+
     const annotated = MATERIALS.map((m) => ({
       id: m.id,
       title: m.title,
       level: m.level,
       topic: m.topic,
       format: m.format,
-      order: m.order,
       thumbnail: m.thumbnail,
       progress: progressMap[m.id] || { status: "not_started", completed_at: null },
     }));
@@ -114,6 +185,10 @@ export const getProgressSummary = async (req, res) => {
 
     const progressMap = {};
     (data || []).forEach((p) => (progressMap[p.material_id] = p.status));
+
+    const { data: mats, error: matsError } = await supabase.from("materials").select("*");
+    if (matsError) throw matsError;
+    const MATERIALS = mats || [];
 
     const stats = {};
     for (const level of ["Pemula", "Menengah", "Mahir"]) {
@@ -157,7 +232,15 @@ export const reassessLevel = async (req, res) => {
       .eq("status", "completed");
 
     const completedIds = new Set((progressData || []).map((p) => p.material_id));
-    const currentLevelMats = MATERIALS.filter((m) => m.level === currentLevel);
+    
+    const { data: currentLevelMatsData, error: currentLevelMatsError } = await supabase
+      .from("materials")
+      .select("*")
+      .eq("level", currentLevel);
+    if (currentLevelMatsError) throw currentLevelMatsError;
+      
+    const currentLevelMats = currentLevelMatsData || [];
+    
     const completedCount = currentLevelMats.filter((m) => completedIds.has(m.id)).length;
     const completionPct = currentLevelMats.length
       ? Math.round((completedCount / currentLevelMats.length) * 100)

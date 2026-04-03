@@ -42,7 +42,11 @@ const Login = () => {
       storage.setItem("userSession", JSON.stringify(data.session));
       storage.setItem("userProfile", JSON.stringify(data.profile));
 
-      navigate("/welcome");
+      if (data.profile && data.profile.skill_level && data.profile.learning_style) {
+        window.location.href = "/dashboard";
+      } else {
+        window.location.href = "/welcome";
+      }
     } catch (err) {
       setError(err.message);
     } finally {

@@ -21,8 +21,15 @@ import AnalysisLoading from "./pages/quiz/AnalysisLoading";
 import QuizResult from "./pages/quiz/QuizResult";
 
 function App() {
-    // default true so can access the dashboard without login
-  const isAuthenticated = true;
+  const isAuthenticated = !!localStorage.getItem("userSession") || !!sessionStorage.getItem("userSession");
+  
+  const getProfile = () => {
+    const profile = localStorage.getItem("userProfile") || sessionStorage.getItem("userProfile");
+    return profile ? JSON.parse(profile) : null;
+  };
+
+  const profile = getProfile();
+  const needsAssessment = profile?.needs_reassessment === true;
 
   return (
     <BrowserRouter>
@@ -30,8 +37,8 @@ function App() {
         {/* GRUP PUBLIC (Landing, Login, Register) */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} />
+          <Route path="/register" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Register />} />
         </Route>
 
         {/* GRUP QUIZ */}
@@ -48,7 +55,13 @@ function App() {
         {/* GRUP DASHBOARD */}
         <Route
           element={
-            isAuthenticated ? <DashboardLayout /> : <Navigate to="/login" />
+            !isAuthenticated ? (
+              <Navigate to="/login" />
+            ) : needsAssessment ? (
+              <Navigate to="/welcome" />
+            ) : (
+              <DashboardLayout />
+            )
           }
         >
           <Route path="/dashboard" element={<DashboardHome />} />
@@ -57,14 +70,17 @@ function App() {
         {/* GRUP LEARNING */}
         <Route
           element={
-            isAuthenticated ? <LearningLayout /> : <Navigate to="/login" />
+            !isAuthenticated ? (
+              <Navigate to="/login" />
+            ) : needsAssessment ? (
+              <Navigate to="/welcome" />
+            ) : (
+              <LearningLayout />
+            )
           }
         >
-          <Route path="/belajar/video/" element={<VisualLearningPage />} />
-          <Route path="/belajar/materi/" element = {<ReadingLearningPage />} />
-          {/* /belajar/materi/:materiId gini kepanjangan ga? */}
-
-          {/* <Route path="/belajar/:id" element={<MaterialDetail />} /> */}
+          <Route path="/belajar/video/:videoId" element={<VisualLearningPage />} />
+          <Route path="/belajar/materi/:materiId" element={<ReadingLearningPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/dashboard" />} />

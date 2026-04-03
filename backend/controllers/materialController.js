@@ -1,24 +1,20 @@
 import { supabase } from "../config/supabaseClient.js";
-import { MATERIALS, LEVEL_ORDER } from "../data/materials.js";
 
 export const getMaterials = async (req, res) => {
   try {
     const { level, format, topic } = req.query;
-    let filtered = [...MATERIALS];
+    let query = supabase
+      .from("materials")
+      .select("id, title, external_id, source_api, format, level, topic, created_at, thumbnail")
+      .order("created_at", { ascending: true });
 
-    if (level) filtered = filtered.filter((m) => m.level === level);
-    if (format) filtered = filtered.filter((m) => m.format === format);
-    if (topic)
-      filtered = filtered.filter((m) =>
-        m.topic.toLowerCase().includes(topic.toLowerCase())
-      );
+    if (level) query = query.eq("level", level);
+    if (format) query = query.eq("format", format);
+    if (topic) query = query.ilike("topic", `%${topic}%`);
 
-    filtered.sort((a, b) => {
-      const ld = (LEVEL_ORDER[a.level] || 0) - (LEVEL_ORDER[b.level] || 0);
-      return ld !== 0 ? ld : (a.order || 0) - (b.order || 0);
-    });
+    const { data: list, error } = await query;
+    if (error) throw error;
 
-    const list = filtered.map(({ content_text, ...rest }) => rest);
     res.json({ success: true, total: list.length, data: list });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error", error: error.message });
@@ -27,9 +23,15 @@ export const getMaterials = async (req, res) => {
 
 export const getMaterialById = async (req, res) => {
   try {
-    const material = MATERIALS.find((m) => m.id === req.params.id);
-    if (!material)
+    const { data: material, error } = await supabase
+      .from("materials")
+      .select("*")
+      .eq("id", req.params.id)
+      .single();
+
+    if (error || !material)
       return res.status(404).json({ success: false, message: "Materi tidak ditemukan" });
+
     res.json({ success: true, data: material });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error", error: error.message });
@@ -45,9 +47,13 @@ export const getMaterialsByLevel = async (req, res) => {
     if (!valid.includes(level))
       return res.status(400).json({ success: false, message: "Level tidak valid" });
 
-    const levelMats = MATERIALS.filter((m) => m.level === level).sort(
-      (a, b) => (a.order || 0) - (b.order || 0)
-    );
+    const { data: levelMats, error } = await supabase
+      .from("materials")
+      .select("id, title, external_id, source_api, format, level, topic, created_at, thumbnail")
+      .eq("level", level)
+      .order("created_at", { ascending: true });
+
+    if (error) throw error;
 
     let progressMap = {};
     if (user_id) {
@@ -58,7 +64,7 @@ export const getMaterialsByLevel = async (req, res) => {
       if (data) data.forEach((p) => (progressMap[p.material_id] = p));
     }
 
-    const result = levelMats.map(({ content_text, ...m }) => ({
+    const result = levelMats.map((m) => ({
       ...m,
       progress: progressMap[m.id] || { status: "not_started", completed_at: null },
     }));
@@ -70,6 +76,13 @@ export const getMaterialsByLevel = async (req, res) => {
 };
 
 export const getTopics = async (req, res) => {
-  const topics = [...new Set(MATERIALS.map((m) => m.topic))];
-  res.json({ success: true, data: topics });
+  try {
+    const { data, error } = await supabase.from("materials").select("topic");
+    if (error) throw error;
+
+    const topics = [...new Set(data.map((m) => m.topic))];
+    res.json({ success: true, data: topics });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
 };
