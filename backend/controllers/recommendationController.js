@@ -1,6 +1,14 @@
 import axios from "axios";
 import { supabase } from "../config/supabaseClient.js";
 
+const apiKeys = process.env.YOUTUBE_API_KEYS ? process.env.YOUTUBE_API_KEYS.split(',') : [];
+
+// Rollet
+const getRandomApiKey = () => {
+  const randomIndex = Math.floor(Math.random() * apiKeys.length);
+  return apiKeys[randomIndex]?.trim();
+};
+
 export const getRecommendations = async (req, res) => {
   try {
     const { user_id } = req.params;
@@ -62,7 +70,8 @@ export const getRecommendations = async (req, res) => {
     );
 
     let videos = [];
-    if (process.env.YOUTUBE_API_KEY) {
+    if (apiKeys.length > 0) {
+      let currentKey = getRandomApiKey();
       try {
         const topicsToSearch = [...new Set(levelMats.slice(0, 2).map((m) => m.topic))];
         const query = `javascript ${topicsToSearch[0] || skill_level} tutorial bahasa indonesia`;
@@ -74,7 +83,7 @@ export const getRecommendations = async (req, res) => {
             type: "video",
             maxResults: 4,
             relevanceLanguage: "id",
-            key: process.env.YOUTUBE_API_KEY,
+            key: currentKey,
           },
           timeout: 5000,
         });
@@ -92,6 +101,9 @@ export const getRecommendations = async (req, res) => {
             topic: topicsToSearch[0] || "Umum"
           }));
       } catch (ytErr) {
+        if (ytErr.response?.status === 403) {
+          console.error(`Quota exceeded for key: ${currentKey?.substring(0, 10)}...`);
+        }
         console.warn("YouTube API error:", ytErr.message);
       }
     }
@@ -115,17 +127,18 @@ export const getYoutubeMaterials = async (req, res) => {
     const { topic } = req.query;
     if (!topic) return res.status(400).json({ success: false, message: "Query 'topic' wajib diisi" });
 
-    if (!process.env.YOUTUBE_API_KEY) {
+    if (apiKeys.length === 0) {
       return res.status(503).json({ success: false, message: "YouTube API key tidak tersedia" });
     }
 
+    let currentKey = getRandomApiKey();
     const response = await axios.get("https://www.googleapis.com/youtube/v3/search", {
       params: {
         part: "snippet",
         q: `javascript ${topic} tutorial`,
         type: "video",
         maxResults: 5,
-        key: process.env.YOUTUBE_API_KEY,
+        key: currentKey,
       },
       timeout: 8000,
     });
@@ -139,6 +152,9 @@ export const getYoutubeMaterials = async (req, res) => {
 
     res.json({ success: true, data: videos });
   } catch (error) {
+    if (error.response?.status === 403) {
+      console.error(`Quota exceeded for YouTube key: ${error.config?.params?.key?.substring(0, 10)}...`);
+    }
     console.error("YouTube error:", error.response?.data || error.message);
     res.status(500).json({ success: false, message: "Gagal mengambil video YouTube" });
   }
