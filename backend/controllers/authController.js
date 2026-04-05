@@ -19,6 +19,7 @@ export const registerUser = async (req, res) => {
     }
 
     const userId = authData.user?.id;
+    
     if (userId) {
       const { error: dbError } = await supabase
         .from("users")
@@ -42,12 +43,13 @@ export const registerUser = async (req, res) => {
     res.status(201).json({
       message: "User registered successfully",
       user: authData.user,
-      session: authData.session,
+      session: authData.session, 
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
@@ -66,21 +68,23 @@ export const loginUser = async (req, res) => {
       .from("users")
       .select("*")
       .eq("id", authData.user.id)
-      .single();
+      .single(); 
 
     res.status(200).json({
       message: "Login successful",
-      user: authData.user,
-      profile: userData || null,
-      session: authData.session,
+      user: authData.user,           
+      profile: userData || null,      
+      session: authData.session,     
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
+
 export const getUserProfile = async (req, res) => {
   const { id } = req.params;
+  
   try {
     const { data, error } = await supabase
       .from("users")

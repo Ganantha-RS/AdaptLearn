@@ -13,16 +13,21 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "*",
+  origin: process.env.FRONTEND_URL || "*", 
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+
 app.use("/api/quiz", quizRoutes);
+
 app.use("/api/materials", materialRoutes);
+
 app.use("/api/progress", progressRoutes);
+
 app.use("/api/recommendations", recommendationRoutes);
 
 app.get("/", (req, res) => {
@@ -41,12 +46,19 @@ app.get("/", (req, res) => {
 });
 
 app.use((req, res) => {
-  res.status(404).json({ success: false, message: `Route ${req.method} ${req.path} tidak ditemukan` });
+  res.status(404).json({ 
+    success: false, 
+    message: `Route ${req.method} ${req.path} tidak ditemukan` 
+  });
 });
 
 app.use((err, req, res, next) => {
   console.error("Unhandled error:", err);
-  res.status(500).json({ success: false, message: "Internal server error", error: err.message });
+  res.status(500).json({ 
+    success: false, 
+    message: "Internal server error", 
+    error: err.message 
+  });
 });
 
 const PORT = process.env.PORT || 5000;

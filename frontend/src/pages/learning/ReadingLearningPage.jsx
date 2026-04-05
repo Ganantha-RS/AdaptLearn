@@ -11,48 +11,78 @@ const ReadingLearningPage = () => {
   const [materi, setMateri] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isDone, setIsDone] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const userStr = localStorage.getItem("userProfile") || sessionStorage.getItem("userProfile");
-  const userProfile = userStr ? JSON.parse(userStr) : null;
+  const getUserProfile = () => {
+    const userStr = localStorage.getItem("userProfile") || sessionStorage.getItem("userProfile");
+    return userStr ? JSON.parse(userStr) : null;
+  };
+
+  const userProfile = getUserProfile();
 
   useEffect(() => {
-    const fetchMaterial = async () => {
+    const fetchMaterialAndProgress = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/materials/${materiId}`);
-        const data = await response.json();
-        if (data.success) {
-          setMateri(data.data);
+        setLoading(true);
+        
+        const materialRes = await fetch(`http://localhost:5000/api/materials/${materiId}`);
+        const materialData = await materialRes.json();
+        
+        if (materialData.success) {
+          setMateri(materialData.data);
+        } else {
+          console.error("Failed to load material:", materialData);
+        }
+
+        if (userProfile && userProfile.id) {
+          
+          const progressRes = await fetch(`http://localhost:5000/api/progress/${userProfile.id}`);
+          const progressData = await progressRes.json();
+          
+          if (progressData.success) {
+            const currentMaterial = progressData.data.find(m => m.id === materiId);
+            if (currentMaterial && currentMaterial.progress.status === "completed") {
+              setIsDone(true);
+            }
+          }
+
+          if (!isDone) {
+            const saveRes = await fetch("http://localhost:5000/api/progress/save", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                user_id: userProfile.id,
+                material_id: materiId,
+                status: "in_progress",
+              }),
+            });
+            
+            const saveData = await saveRes.json();
+          }
+        } else {
+          console.warn("User not logged in");
         }
       } catch (error) {
-        console.error("Error fetching material:", error);
+        console.error("Error in fetchMaterialAndProgress:", error);
       } finally {
         setLoading(false);
       }
     };
-    if (materiId) fetchMaterial();
 
-    if (materiId && userProfile) {
-      fetch("http://localhost:5000/api/progress/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: userProfile.id,
-          material_id: materiId,
-          status: "in_progress",
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success && data.data && data.data.status === "completed") {
-            setIsDone(true);
-          }
-        })
-        .catch(console.error);
+    if (materiId) {
+      fetchMaterialAndProgress();
     }
-  }, [materiId, userProfile]);
+  }, [materiId]); 
 
   const handleMarkAsDone = async () => {
-    if (!userProfile) return;
+
+    if (!materiId) {
+      console.error("Material ID tidak valid!");
+      return;
+    }
+    
+    setSaving(true);
+    
     try {
       const res = await fetch("http://localhost:5000/api/progress/save", {
         method: "POST",
@@ -63,7 +93,9 @@ const ReadingLearningPage = () => {
           status: "completed",
         }),
       });
+      
       const data = await res.json();
+      
       if (data.success) {
         setIsDone(true);
         
@@ -75,12 +107,19 @@ const ReadingLearningPage = () => {
           storage.setItem("userProfile", JSON.stringify(profileData.data));
           
           if (profileData.data.needs_reassessment) {
-            window.location.href = "/welcome";
+            alert("Kamu berhasil menyelesaikan 5 materi, ulangi lagi kuisnya yuk!")
+            setTimeout(() => {
+              window.location.href = "/welcome";
+            }, 1000);
           }
         }
+      } else {
+        console.error("Failed to save progress:", data);
       }
     } catch (error) {
-      console.error("Gagal menyimpan progress:", error);
+      console.error("Error saving progress:", error);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -98,7 +137,7 @@ const ReadingLearningPage = () => {
     <div className="min-h-screen bg-white">
       {/* Konten Utama */}
       <div className="max-w-3xl mx-auto px-6 py-10">
-        <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6 -ml-4 flex items-center gap-2 text-gray-600">
+        <Button variant="ghost" onClick={() => navigate("/dashboard")} className="mb-6 -ml-4 flex items-center gap-2 text-gray-600">
           <ChevronLeft size={20} /> Kembali
         </Button>
 
@@ -116,13 +155,13 @@ const ReadingLearningPage = () => {
         )}
 
         {/* konten Markdown */}
-        <div className="text-gray-800 text-base leading-loose mb-12 max-w-none text-justify">
+        <div className="text-gray-800 text-base leading-loose mb-12 max-w-none text-justify prose prose-slate">
           <ReactMarkdown
             components={{
               h1: ({node: _, ...props}) => <h1 className="text-2xl font-bold mt-8 mb-4 text-gray-900" {...props} />,
               h2: ({node: _, ...props}) => <h2 className="text-xl font-bold mt-6 mb-3 text-gray-900" {...props} />,
               h3: ({node: _, ...props}) => <h3 className="text-lg font-bold mt-5 mb-2 text-gray-900" {...props} />,
-              p: ({node: _, ...props}) => <p className="mb-4 leading-relaxed" {...props} />,
+              p: ({node: _, ...props}) => <div className="mb-4 leading-relaxed" {...props} />,
               ul: ({node: _, ...props}) => <ul className="list-disc pl-5 mb-4 space-y-2" {...props} />,
               ol: ({node: _, ...props}) => <ol className="list-decimal pl-5 mb-4 space-y-2" {...props} />,
               li: ({node: _, ...props}) => <li className="leading-relaxed" {...props} />,
@@ -143,6 +182,9 @@ const ReadingLearningPage = () => {
                   </pre>
                 )
               },
+              pre: ({node: _, ...props}) => (
+                <pre className="bg-[#1e1e1e] text-gray-100 p-4 rounded-xl overflow-x-auto my-6 text-sm font-mono shadow-sm" {...props} />
+              ),
               img: ({node: _, ...props}) => (
                 <span className="flex flex-col items-center my-8">
                   <img className="max-w-full rounded-xl shadow-sm border border-gray-100" {...props} />
@@ -158,11 +200,17 @@ const ReadingLearningPage = () => {
         <div className="flex justify-end mb-16 pt-8 border-t border-gray-100">
           <Button
             onClick={handleMarkAsDone}
-            disabled={isDone}
-            className={`flex items-center gap-2 px-8 py-6 rounded-xl font-bold text-base transition-all duration-300 ${isDone ? 'bg-green-600 hover:bg-green-700 opacity-90 cursor-default' : 'bg-orange-600 hover:bg-[#d44d15]'} text-white shadow-md cursor-pointer`}
+            disabled={isDone || saving}
+            className={`flex items-center gap-2 px-8 py-6 rounded-xl font-bold text-base transition-all duration-300 ${
+              isDone 
+                ? 'bg-green-600 hover:bg-green-700 opacity-90 cursor-default' 
+                : saving
+                ? 'bg-gray-400 cursor-wait'
+                : 'bg-orange-600 hover:bg-[#d44d15]'
+            } text-white shadow-md`}
           >
             <CheckCircle size={22} className="stroke-[2.5px]" /> 
-            {isDone ? "Selesai" : "Mark as Done"}
+            {saving ? "Menyimpan..." : isDone ? "Selesai" : "Mark as Done"}
           </Button>
         </div>
 

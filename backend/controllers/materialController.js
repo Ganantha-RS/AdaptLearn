@@ -3,14 +3,15 @@ import { supabase } from "../config/supabaseClient.js";
 export const getMaterials = async (req, res) => {
   try {
     const { level, format, topic } = req.query;
+    
     let query = supabase
       .from("materials")
       .select("id, title, external_id, source_api, format, level, topic, created_at, thumbnail")
-      .order("created_at", { ascending: true });
+      .order("created_at", { ascending: true }); 
 
-    if (level) query = query.eq("level", level);
-    if (format) query = query.eq("format", format);
-    if (topic) query = query.ilike("topic", `%${topic}%`);
+    if (level) query = query.eq("level", level);          
+    if (format) query = query.eq("format", format);        
+    if (topic) query = query.ilike("topic", `%${topic}%`); 
 
     const { data: list, error } = await query;
     if (error) throw error;
@@ -25,9 +26,9 @@ export const getMaterialById = async (req, res) => {
   try {
     const { data: material, error } = await supabase
       .from("materials")
-      .select("*")
+      .select("*") 
       .eq("id", req.params.id)
-      .single();
+      .single(); 
 
     if (error || !material)
       return res.status(404).json({ success: false, message: "Materi tidak ditemukan" });
@@ -61,6 +62,7 @@ export const getMaterialsByLevel = async (req, res) => {
         .from("user_progress")
         .select("material_id, status, completed_at")
         .eq("user_id", user_id);
+      
       if (data) data.forEach((p) => (progressMap[p.material_id] = p));
     }
 
@@ -75,12 +77,14 @@ export const getMaterialsByLevel = async (req, res) => {
   }
 };
 
+
 export const getTopics = async (req, res) => {
   try {
     const { data, error } = await supabase.from("materials").select("topic");
     if (error) throw error;
 
     const topics = [...new Set(data.map((m) => m.topic))];
+    
     res.json({ success: true, data: topics });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error", error: error.message });

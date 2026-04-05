@@ -8,26 +8,39 @@ export const saveProgress = async (req, res) => {
     const { user_id, material_id, external_id, video_metadata, status } = req.body;
 
     if (!user_id || (!material_id && !external_id) || !status) {
-      return res.status(400).json({ success: false, message: "user_id, material_id (or external_id), dan status wajib diisi" });
+      return res.status(400).json({ 
+        success: false, 
+        message: "user_id, material_id (or external_id), dan status wajib diisi" 
+      });
     }
 
     const validStatus = ["in_progress", "completed", "not_started"];
     if (!validStatus.includes(status)) {
-      return res.status(400).json({ success: false, message: "Status tidak valid. Gunakan: not_started, in_progress, completed" });
+      return res.status(400).json({ 
+        success: false, 
+        message: "Status tidak valid. Gunakan: not_started, in_progress, completed" 
+      });
     }
 
     let finalMaterialId = material_id;
 
     if (!finalMaterialId && external_id) {
-      const { data: existingMaterial } = await supabase
+      
+      const { data: existingMaterial, error: checkError } = await supabase
         .from("materials")
         .select("id")
         .eq("external_id", external_id)
-        .single();
+        .maybeSingle();
         
+      if (checkError) {
+        console.error("❌ Error checking material:", checkError);
+        return res.status(500).json({ success: false, error: checkError.message });
+      }
+      
       if (existingMaterial) {
         finalMaterialId = existingMaterial.id;
       } else if (video_metadata) {
+        
         const { data: newMaterial, error: insertError } = await supabase
           .from("materials")
           .insert([{
@@ -42,19 +55,31 @@ export const saveProgress = async (req, res) => {
           .select("id")
           .single();
           
-        if (insertError) return res.status(500).json({ success: false, error: insertError });
+        if (insertError) {
+          console.error("❌ Error creating material:", insertError);
+          return res.status(500).json({ success: false, error: insertError.message });
+        }
+        
         finalMaterialId = newMaterial.id;
       } else {
-        return res.status(400).json({ success: false, message: "Video metadata dibutuhkan untuk materi baru" });
+        return res.status(400).json({ 
+          success: false, 
+          message: "Video metadata dibutuhkan untuk materi baru" 
+        });
       }
     }
 
-    const { data: existing } = await supabase
+    const { data: existing, error: existingError } = await supabase
       .from("user_progress")
       .select("id, status")
       .eq("user_id", user_id)
       .eq("material_id", finalMaterialId)
-      .single();
+      .maybeSingle(); 
+
+    if (existingError) {
+      console.error("❌ Error checking existing progress:", existingError);
+      return res.status(500).json({ success: false, error: existingError.message });
+    }
 
     let result;
     if (existing) {
@@ -89,15 +114,12 @@ export const saveProgress = async (req, res) => {
     }
 
     if (status === "completed") {
-      // material
       const { data: matData } = await supabase.from("materials").select("level").eq("id", finalMaterialId).single();
       const matLevel = matData?.level;
 
-      // user current level
       const { data: userData } = await supabase.from("users").select("skill_level").eq("id", user_id).single();
       const userLevel = userData?.skill_level;
 
-      // if material level matches user current level (and not Mahir)
       if (matLevel === userLevel && userLevel !== "Mahir") {
         const { data: progressData } = await supabase
           .from("user_progress")
@@ -120,6 +142,7 @@ export const saveProgress = async (req, res) => {
 
     res.json({ success: true, message: "Progress disimpan", data: result });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: "Server error", error: error.message });
   }
 };

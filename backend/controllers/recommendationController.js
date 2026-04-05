@@ -165,3 +165,91 @@ export const getRelatedMaterials = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error", error: error.message });
   }
 };
+
+export const getNextMaterial = async (req, res) => {
+  try {
+    const { current_id } = req.params;
+    const { user_id } = req.query;
+
+    const { data: currentMaterial, error: currentError } = await supabase
+      .from("materials")
+      .select("*")
+      .eq("id", current_id)
+      .single();
+
+    if (currentError || !currentMaterial) {
+      return res.status(404).json({ success: false, message: "Material saat ini tidak ditemukan" });
+    }
+
+    let completedIds = new Set();
+    if (user_id) {
+      const { data: progressData } = await supabase
+        .from("user_progress")
+        .select("material_id")
+        .eq("user_id", user_id)
+        .eq("status", "completed");
+      
+      if (progressData) {
+        completedIds = new Set(progressData.map(p => p.material_id));
+      }
+    }
+
+    const { data: sameLevelMaterials, error: sameLevelError } = await supabase
+      .from("materials")
+      .select("*")
+      .eq("level", currentMaterial.level)
+      .gt("created_at", currentMaterial.created_at)
+      .order("created_at", { ascending: true })
+      .limit(10);
+
+    if (sameLevelError) throw sameLevelError;
+
+    const availableSameLevel = sameLevelMaterials?.filter(m => !completedIds.has(m.id)) || [];
+
+    if (availableSameLevel.length > 0) {
+      return res.json({ success: true, data: availableSameLevel[0] });
+    }
+
+    return res.json({ success: true, data: null, message: "Kamu sudah mempelajari semuanya di level ini" });
+
+  } catch (error) {
+    console.error("Error in getNextMaterial:", error);
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
+export const getPreviousMaterial = async (req, res) => {
+  try {
+    const { current_id } = req.params;
+
+    const { data: currentMaterial, error: currentError } = await supabase
+      .from("materials")
+      .select("*")
+      .eq("id", current_id)
+      .single();
+
+    if (currentError || !currentMaterial) {
+      return res.status(404).json({ success: false, message: "Material saat ini tidak ditemukan" });
+    }
+
+    const { data: previousMaterials, error: previousError } = await supabase
+      .from("materials")
+      .select("*")
+      .eq("level", currentMaterial.level)
+      .lt("created_at", currentMaterial.created_at)
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    if (previousError) throw previousError;
+
+    if (previousMaterials && previousMaterials.length > 0) {
+      return res.json({ success: true, data: previousMaterials[0] });
+    }
+
+    return res.json({ success: true, data: null, message: "Ini adalah materi pertama" });
+
+  } catch (error) {
+    console.error("Error in getPreviousMaterial:", error);
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
+};

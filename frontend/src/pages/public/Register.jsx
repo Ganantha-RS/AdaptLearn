@@ -48,7 +48,6 @@ const Register = () => {
         throw new Error(data.error?.message || data.message || "Registration failed");
       }
 
-      alert("Registration success! Please login.");
       navigate("/login");
     } catch (err) {
       setError(err.message);
