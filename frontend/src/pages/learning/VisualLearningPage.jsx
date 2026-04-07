@@ -50,6 +50,8 @@ const VisualLearningPage = () => {
       const data = await res.json();
       if (data.success) {
         setIsDone(true);
+        // Notify LearningLayout to refresh next/previous navigation
+        window.dispatchEvent(new Event("materialMarkedAsDone"));
         
         const profileRes = await fetch(`http://localhost:5000/api/auth/profile/${userProfile.id}`);
         const profileData = await profileRes.json();

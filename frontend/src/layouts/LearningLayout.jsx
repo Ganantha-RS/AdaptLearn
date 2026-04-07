@@ -70,6 +70,13 @@ const LearningLayout = () => {
     fetchNavigationMaterials();
   }, [location.pathname]);
 
+  // Listen for markAsDone event from child pages to refresh next/prev navigation
+  useEffect(() => {
+    const handleRefresh = () => fetchNavigationMaterials();
+    window.addEventListener("materialMarkedAsDone", handleRefresh);
+    return () => window.removeEventListener("materialMarkedAsDone", handleRefresh);
+  }, [location.pathname]);
+
   const handleNextLesson = () => {
     if (!nextMaterial) {
       alert("Tidak ada materi selanjutnya. Anda sudah menyelesaikan semua materi!");

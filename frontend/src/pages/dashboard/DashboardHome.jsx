@@ -61,7 +61,7 @@ const DashboardHome = () => {
     );
   }
 
-  const { recommended_materials = [], youtube_videos = [], user_level } = dashboardData || {};
+  const { recommended_materials = [], youtube_videos = [], youtube_error = null, user_level } = dashboardData || {};
 
   const inProgressItems = recommended_materials.filter(m => m.recommendation_reason && m.recommendation_reason.includes('Sedang'));
   const currentLearning = inProgressItems.length > 0 ? inProgressItems[0] : (recommended_materials.length > 0 ? recommended_materials[0] : null);
@@ -203,7 +203,13 @@ const DashboardHome = () => {
               </Card>
             ))}
             {youtube_videos.length === 0 && (
-              <p className="text-sm text-text-secondary italic col-span-2">Tidak ada video terkait yang ditemukan.</p>
+              <p className="text-sm text-text-secondary italic col-span-2">
+                {youtube_error === "quota_exceeded"
+                  ? "⚠️ Video YouTube tidak tersedia saat ini karena limit API harian habis. Coba lagi besok."
+                  : youtube_error === "no_api_key"
+                  ? "⚠️ YouTube API key belum dikonfigurasi."
+                  : "Tidak ada video terkait yang ditemukan."}
+              </p>
             )}
           </div>
         </section>

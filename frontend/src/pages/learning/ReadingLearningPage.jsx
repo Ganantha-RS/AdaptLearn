@@ -21,6 +21,9 @@ const ReadingLearningPage = () => {
   const userProfile = getUserProfile();
 
   useEffect(() => {
+    setIsDone(false);
+    setMateri(null);
+
     const fetchMaterialAndProgress = async () => {
       try {
         setLoading(true);
@@ -39,15 +42,17 @@ const ReadingLearningPage = () => {
           const progressRes = await fetch(`http://localhost:5000/api/progress/${userProfile.id}`);
           const progressData = await progressRes.json();
           
+          let alreadyCompleted = false;
           if (progressData.success) {
             const currentMaterial = progressData.data.find(m => m.id === materiId);
             if (currentMaterial && currentMaterial.progress.status === "completed") {
               setIsDone(true);
+              alreadyCompleted = true;
             }
           }
 
-          if (!isDone) {
-            const saveRes = await fetch("http://localhost:5000/api/progress/save", {
+          if (!alreadyCompleted) {
+            await fetch("http://localhost:5000/api/progress/save", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -56,8 +61,6 @@ const ReadingLearningPage = () => {
                 status: "in_progress",
               }),
             });
-            
-            const saveData = await saveRes.json();
           }
         } else {
           console.warn("User not logged in");
@@ -98,6 +101,7 @@ const ReadingLearningPage = () => {
       
       if (data.success) {
         setIsDone(true);
+        window.dispatchEvent(new Event("materialMarkedAsDone"));
         
         const profileRes = await fetch(`http://localhost:5000/api/auth/profile/${userProfile.id}`);
         const profileData = await profileRes.json();
@@ -135,26 +139,22 @@ const ReadingLearningPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Konten Utama */}
       <div className="max-w-3xl mx-auto px-6 py-10">
         <Button variant="ghost" onClick={() => navigate("/dashboard")} className="mb-6 -ml-4 flex items-center gap-2 text-gray-600">
           <ChevronLeft size={20} /> Kembali
         </Button>
 
-        {/* Judul */}
         <h1 className="text-3xl font-extrabold text-gray-900 mb-2">
           {materi.title}
         </h1>
         <p className="text-sm font-semibold text-orange-600 uppercase tracking-widest mb-8">{materi.topic} • BACAAN</p>
 
-        {/* Gambar  */}
         {materi.thumbnail && (
           <div className="w-full flex justify-center mb-8 gap-2 flex-col">
             <img src={materi.thumbnail} alt={materi.title} className="w-full max-h-[400px] object-cover rounded-xl shadow-sm border border-gray-100" />
           </div>
         )}
 
-        {/* konten Markdown */}
         <div className="text-gray-800 text-base leading-loose mb-12 max-w-none text-justify prose prose-slate">
           <ReactMarkdown
             components={{

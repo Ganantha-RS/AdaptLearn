@@ -70,41 +70,55 @@ export const getRecommendations = async (req, res) => {
     );
 
     let videos = [];
-    if (apiKeys.length > 0) {
-      let currentKey = getRandomApiKey();
-      try {
-        const topicsToSearch = [...new Set(levelMats.slice(0, 2).map((m) => m.topic))];
-        const query = `javascript ${topicsToSearch[0] || skill_level} tutorial bahasa indonesia`;
+    let youtubeError = null;
 
-        const ytRes = await axios.get("https://www.googleapis.com/youtube/v3/search", {
-          params: {
-            part: "snippet",
-            q: query,
-            type: "video",
-            maxResults: 4,
-            relevanceLanguage: "id",
-            key: currentKey,
-          },
-          timeout: 5000,
-        });
+    if (apiKeys.length === 0) {
+      youtubeError = "no_api_key";
+    } else {
+      const topicsToSearch = [...new Set(levelMats.slice(0, 2).map((m) => m.topic))];
+      const query = `javascript ${topicsToSearch[0] || skill_level} tutorial bahasa indonesia`;
 
-        videos = ytRes.data.items
-          .filter((v) => !completedExternalIds.has(v.id.videoId))
-          .map((v) => ({
-            title: v.snippet.title,
-            channel: v.snippet.channelTitle,
-            url: `https://youtube.com/watch?v=${v.id.videoId}`,
-            external_id: v.id.videoId,
-            thumbnail: v.snippet.thumbnails.medium.url,
-            published_at: v.snippet.publishedAt,
-            level: skill_level,
-            topic: topicsToSearch[0] || "Umum"
-          }));
-      } catch (ytErr) {
-        if (ytErr.response?.status === 403) {
-          console.error(`Quota exceeded for key: ${currentKey?.substring(0, 10)}...`);
+      // Try all available keys, stop when one succeeds
+      const shuffledKeys = [...apiKeys].sort(() => Math.random() - 0.5);
+      for (const key of shuffledKeys) {
+        try {
+          const ytRes = await axios.get("https://www.googleapis.com/youtube/v3/search", {
+            params: {
+              part: "snippet",
+              q: query,
+              type: "video",
+              maxResults: 4,
+              relevanceLanguage: "id",
+              key: key.trim(),
+            },
+            timeout: 5000,
+          });
+
+          videos = ytRes.data.items
+            .filter((v) => !completedExternalIds.has(v.id.videoId))
+            .map((v) => ({
+              title: v.snippet.title,
+              channel: v.snippet.channelTitle,
+              url: `https://youtube.com/watch?v=${v.id.videoId}`,
+              external_id: v.id.videoId,
+              thumbnail: v.snippet.thumbnails.medium.url,
+              published_at: v.snippet.publishedAt,
+              level: skill_level,
+              topic: topicsToSearch[0] || "Umum"
+            }));
+          youtubeError = null;
+          break; // sukses, stop coba key lain
+        } catch (ytErr) {
+          if (ytErr.response?.status === 403) {
+            console.error(`Quota exceeded for key: ${key.trim().substring(0, 10)}...`);
+            youtubeError = "quota_exceeded";
+            // lanjut coba key berikutnya
+          } else {
+            console.warn("YouTube API error:", ytErr.message);
+            youtubeError = "api_error";
+            break; // error lain, stop
+          }
         }
-        console.warn("YouTube API error:", ytErr.message);
       }
     }
 
@@ -114,6 +128,7 @@ export const getRecommendations = async (req, res) => {
       learning_style,
       recommended_materials: recommended,
       youtube_videos: videos,
+      youtube_error: youtubeError, // null = ok, "quota_exceeded" / "api_error" / "no_api_key"
       total_materials_at_level: levelMats.length,
       completed_at_level: levelMats.filter((m) => completedIds.has(m.id)).length,
     });
