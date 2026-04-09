@@ -92,9 +92,9 @@ const DashboardHome = () => {
 
   const handleNavigateCurrent = () => {
     if (currentLearning.format === 'video' || currentLearning.format === 'Video') {
-       navigate(`/belajar/video/${currentLearning.external_id}`, { state: { video: currentLearning } });
+      navigate(`/belajar/video/${currentLearning.external_id}`, { state: { video: currentLearning } });
     } else {
-       navigate(`/belajar/materi/${currentLearning.id}`);
+      navigate(`/belajar/materi/${currentLearning.id}`);
     }
   };
 
@@ -102,13 +102,12 @@ const DashboardHome = () => {
     <div className="p-6 md:p-8 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
       {/* Left Column */}
       <div className="lg:col-span-2 space-y-8 order-2 lg:order-1">
-        
+
         {/* Lanjutkan Pembelajaran Section */}
         {currentLearning && (
           <section>
             <div className="">
               <h2 className="text-primary font-bold text-lg mb-4 uppercase tracking-wide flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
                 Lanjutkan Pembelajaran
               </h2>
             </div>
@@ -149,7 +148,7 @@ const DashboardHome = () => {
         <section>
           <div className="flex justify-between items-end mb-4">
             <h2 className="text-text-primary font-bold text-lg">
-               Rekomendasi Bacaan ({user_level})
+              Rekomendasi Bacaan ({user_level})
             </h2>
             <Button variant="link" className="text-primary font-bold p-0 h-auto">
               Lihat Semua
@@ -163,9 +162,9 @@ const DashboardHome = () => {
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center overflow-hidden shrink-0">
                       {materi.thumbnail ? (
-                         <img src={materi.thumbnail} alt={materi.title} className="w-full h-full object-cover" />
+                        <img src={materi.thumbnail} alt={materi.title} className="w-full h-full object-cover" />
                       ) : (
-                         <FileText size={20} />
+                        <FileText size={20} />
                       )}
                     </div>
                     <div>
@@ -198,9 +197,9 @@ const DashboardHome = () => {
               {refreshing ? (
                 <RotateCw size={16} className="text-primary animate-spin" />
               ) : (
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="h-8 w-8 text-text-secondary hover:text-primary rounded-full"
                   onClick={handleRefreshVideos}
                   title="Refresh Rekomendasi"
@@ -217,9 +216,9 @@ const DashboardHome = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {youtube_videos.map((video, index) => (
               <Card key={index} className="bg-surface border-background-alt overflow-hidden flex flex-col hover:border-primary/50 transition-colors">
-                <div 
-                   className="aspect-video bg-background-alt relative flex items-center justify-center group cursor-pointer"
-                   onClick={() => navigate(`/belajar/video/${video.url.split('v=')[1]}`, { state: { video } })}
+                <div
+                  className="aspect-video bg-background-alt relative flex items-center justify-center group cursor-pointer"
+                  onClick={() => navigate(`/belajar/video/${video.url.split('v=')[1]}`, { state: { video } })}
                 >
                   {video.thumbnail ? (
                     <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
@@ -244,8 +243,8 @@ const DashboardHome = () => {
                 {youtube_error === "quota_exceeded"
                   ? "⚠️ Video YouTube tidak tersedia saat ini karena limit API harian habis. Coba lagi besok."
                   : youtube_error === "no_api_key"
-                  ? "⚠️ YouTube API key belum dikonfigurasi."
-                  : "Tidak ada video terkait yang ditemukan."}
+                    ? "⚠️ YouTube API key belum dikonfigurasi."
+                    : "Tidak ada video terkait yang ditemukan."}
               </p>
             )}
           </div>
@@ -278,13 +277,13 @@ const DashboardHome = () => {
             </div>
 
             <div className="bg-white/10 backdrop-blur-sm border border-white/5 rounded-xl p-4 mb-4">
-               <div className="flex justify-between items-center mb-2">
-                 <span className="text-white/70 text-xs font-semibold">SKILL LEVEL</span>
-                 <span className="text-white font-bold text-sm bg-white/20 px-2 py-0.5 rounded">{userProfile.skill_level || user_level || "Pemula"}</span>
-               </div>
-               <p className="text-white/90 text-sm leading-relaxed line-clamp-3">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-white/70 text-xs font-semibold">SKILL LEVEL</span>
+                <span className="text-white font-bold text-sm bg-white/20 px-2 py-0.5 rounded">{userProfile.skill_level || user_level || "Pemula"}</span>
+              </div>
+              <p className="text-white/90 text-sm leading-relaxed line-clamp-3">
                 Lanjutkan perjalanan belajarmu hari ini. Kamu disarankan untuk mempelajari materi yang difokuskan pada tipe gaya belajar dan tingkatan pemahamanmu saat ini.
-               </p>
+              </p>
             </div>
 
             <div className="flex justify-between items-center mt-2 border-t border-white/10 pt-3">
@@ -314,8 +313,8 @@ const DashboardHome = () => {
               <h3 className="text-primary font-bold text-base">Tips Hari Ini</h3>
             </div>
             <p className="text-gray-600 text-sm leading-relaxed italic">
-              "Fokus pada satu topik pada satu waktu dan praktikkan langsung apa yang telah kamu pelajari. 
-               Konsistensi adalah kunci keberhasilan."
+              "Fokus pada satu topik pada satu waktu dan praktikkan langsung apa yang telah kamu pelajari.
+              Konsistensi adalah kunci keberhasilan."
             </p>
           </CardContent>
         </Card>
