@@ -30,7 +30,7 @@ export const registerUser = async (req, res) => {
             email: email,
             skill_level: "Pemula",
             learning_style: "Visual",
-            needs_reassessment: true
+            needs_reassessment: false
           },
         ])
         .select()

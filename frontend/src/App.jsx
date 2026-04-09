@@ -30,7 +30,7 @@ function App() {
 
   const profile = getProfile();
   const needsAssessment = profile?.needs_reassessment === true;
-  const isNewUser = !profile?.skill_level || !profile?.learning_style;
+  const isNewUser = !profile?.last_quiz_at;
 
   return (
     <BrowserRouter>

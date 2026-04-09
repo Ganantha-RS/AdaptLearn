@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 const WelcomeScreen = () => {
   const navigate = useNavigate();
   const userProfile = JSON.parse(localStorage.getItem("userProfile") || sessionStorage.getItem("userProfile") || "{}");
-  const isReassessment = userProfile.needs_reassessment;
+  const isReassessment = userProfile.last_quiz_at && userProfile.needs_reassessment;
 
   return (
     <div className="flex items-center justify-center w-full max-w-4xl mx-auto animate-in fade-in duration-500">
