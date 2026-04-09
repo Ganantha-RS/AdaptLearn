@@ -114,27 +114,19 @@ export const saveProgress = async (req, res) => {
     }
 
     if (status === "completed") {
-      const { data: matData } = await supabase.from("materials").select("level").eq("id", finalMaterialId).single();
-      const matLevel = matData?.level;
-
-      const { data: userData } = await supabase.from("users").select("skill_level").eq("id", user_id).single();
+      const { data: userData } = await supabase.from("users").select("skill_level, last_quiz_at").eq("id", user_id).single();
       const userLevel = userData?.skill_level;
+      const lastQuizAt = userData?.last_quiz_at || '1970-01-01T00:00:00Z';
 
-      if (matLevel === userLevel && userLevel !== "Mahir") {
-        const { data: progressData } = await supabase
-          .from("user_progress")
-          .select("material_id")
-          .eq("user_id", user_id)
-          .eq("status", "completed");
-
-        const completedIds = (progressData || []).map(p => p.material_id);
+      if (userLevel !== "Mahir") {
         const { count } = await supabase
-          .from("materials")
+          .from("user_progress")
           .select("id", { count: 'exact', head: true })
-          .in("id", completedIds)
-          .eq("level", userLevel);
+          .eq("user_id", user_id)
+          .eq("status", "completed")
+          .gt("updated_at", lastQuizAt);
 
-        if (count > 0 && count % 5 === 0) {
+        if (count >= 5) {
           await supabase.from("users").update({ needs_reassessment: true }).eq("id", user_id);
         }
       }

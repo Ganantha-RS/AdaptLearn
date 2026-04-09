@@ -23,7 +23,8 @@ export const getRecommendations = async (req, res) => {
       return res.status(404).json({ success: false, message: "User tidak ditemukan" });
     }
 
-    const { skill_level, learning_style } = user;
+    const skill_level = user.skill_level || "Pemula";
+    const learning_style = user.learning_style || "Visual";
 
     const { data: progressData } = await supabase
       .from("user_progress")
@@ -65,9 +66,23 @@ export const getRecommendations = async (req, res) => {
 
     const recommended = [...inProgressMats, ...notStartedMats];
 
-    const completedExternalIds = new Set(
-      levelMats.filter((m) => completedIds.has(m.id) && m.external_id).map((m) => m.external_id)
-    );
+    // Get ALL completed external_id for user
+    const { data: allCompletedMats } = await supabase
+      .from("user_progress")
+      .select("material_id")
+      .eq("user_id", user_id)
+      .eq("status", "completed");
+    
+    const allCompletedIds = (allCompletedMats || []).map(p => p.material_id);
+    
+    const { data: externalIdsData } = await supabase
+      .from("materials")
+      .select("external_id")
+      .in("id", allCompletedIds)
+      .eq("source_api", "YouTube")
+      .not("external_id", "is", null);
+
+    const completedExternalIds = new Set((externalIdsData || []).map(m => m.external_id));
 
     let videos = [];
     let youtubeError = null;
@@ -75,8 +90,17 @@ export const getRecommendations = async (req, res) => {
     if (apiKeys.length === 0) {
       youtubeError = "no_api_key";
     } else {
-      const topicsToSearch = [...new Set(levelMats.slice(0, 2).map((m) => m.topic))];
-      const query = `javascript ${topicsToSearch[0] || skill_level} tutorial bahasa indonesia`;
+      const topicsToSearch = [...new Set(levelMats.slice(0, 3).map((m) => m.topic))];
+      const baseTopic = topicsToSearch[Math.floor(Math.random() * topicsToSearch.length)] || skill_level;
+      
+      let query = `javascript ${baseTopic} tutorial bahasa indonesia`;
+      
+      const refresh = req.query.refresh === 'true';
+      if (refresh) {
+        const randomKeywords = ["tutorial", "dasar", "tips", "tricks", "coding", "pemrograman", "belajar"];
+        const randomWord = randomKeywords[Math.floor(Math.random() * randomKeywords.length)];
+        query = `javascript ${baseTopic} ${randomWord} bahasa indonesia`;
+      }
 
       // Try all available keys, stop when one succeeds
       const shuffledKeys = [...apiKeys].sort(() => Math.random() - 0.5);
@@ -87,15 +111,21 @@ export const getRecommendations = async (req, res) => {
               part: "snippet",
               q: query,
               type: "video",
-              maxResults: 4,
+              maxResults: 12, 
               relevanceLanguage: "id",
               key: key.trim(),
             },
             timeout: 5000,
           });
 
-          videos = ytRes.data.items
+          let rawVideos = ytRes.data.items || [];
+          
+          // Shuffle results for variety
+          rawVideos = rawVideos.sort(() => Math.random() - 0.5);
+
+          videos = rawVideos
             .filter((v) => !completedExternalIds.has(v.id.videoId))
+            .slice(0, 6) // Ensure we only return 6
             .map((v) => ({
               title: v.snippet.title,
               channel: v.snippet.channelTitle,

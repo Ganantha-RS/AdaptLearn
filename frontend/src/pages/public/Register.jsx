@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-const API_URL = "http://localhost:5000/api/auth/register";
+const API_URL = "/api/auth/register";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -48,7 +48,15 @@ const Register = () => {
         throw new Error(data.error?.message || data.message || "Registration failed");
       }
 
-      navigate("/login");
+      if (data.session) {
+        localStorage.setItem("userSession", JSON.stringify(data.session));
+        localStorage.setItem("userProfile", JSON.stringify(data.profile));
+        sessionStorage.setItem("userSession", JSON.stringify(data.session));
+        sessionStorage.setItem("userProfile", JSON.stringify(data.profile));
+      }
+      
+      // Force immediate redirect to welcome
+      window.location.href = "/welcome";
     } catch (err) {
       setError(err.message);
     } finally {

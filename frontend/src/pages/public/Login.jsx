@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-const API_URL = "http://localhost:5000/api/auth/login";
+const API_URL = "/api/auth/login";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -42,7 +42,7 @@ const Login = () => {
       storage.setItem("userSession", JSON.stringify(data.session));
       storage.setItem("userProfile", JSON.stringify(data.profile));
 
-      if (data.profile && data.profile.skill_level && data.profile.learning_style) {
+      if (data.profile && data.profile.skill_level && data.profile.learning_style && !data.profile.needs_reassessment) {
         window.location.href = "/dashboard";
       } else {
         window.location.href = "/welcome";

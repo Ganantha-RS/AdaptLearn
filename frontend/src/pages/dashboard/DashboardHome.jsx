@@ -6,6 +6,7 @@ import {
   Eye,
   ArrowRight,
   LogOut,
+  RotateCw
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -17,6 +18,7 @@ const DashboardHome = () => {
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("userSession");
@@ -38,7 +40,7 @@ const DashboardHome = () => {
         const profile = JSON.parse(profileStr);
         setUserProfile(profile);
 
-        const response = await fetch(`http://localhost:5000/api/recommendations/${profile.id}`);
+        const response = await fetch(`/api/recommendations/${profile.id}`);
         const data = await response.json();
         if (data.success) {
           setDashboardData(data);
@@ -52,6 +54,26 @@ const DashboardHome = () => {
 
     fetchDashboardInfo();
   }, [navigate]);
+
+  const handleRefreshVideos = async () => {
+    if (refreshing) return;
+    setRefreshing(true);
+    try {
+      const response = await fetch(`/api/recommendations/${userProfile.id}?refresh=true`);
+      const data = await response.json();
+      if (data.success) {
+        setDashboardData(prev => ({
+          ...prev,
+          youtube_videos: data.youtube_videos,
+          youtube_error: data.youtube_error
+        }));
+      }
+    } catch (error) {
+      console.error("Gagal menyegarkan video:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   if (loading || !userProfile) {
     return (
@@ -172,9 +194,24 @@ const DashboardHome = () => {
             <h2 className="text-text-primary font-bold text-lg">
               Rekomendasi Video YouTube
             </h2>
-            <Button variant="link" className="text-primary font-bold p-0 h-auto" onClick={() => window.open('https://youtube.com', '_blank')}>
-              Lihat Semua
-            </Button>
+            <div className="flex items-center gap-2">
+              {refreshing ? (
+                <RotateCw size={16} className="text-primary animate-spin" />
+              ) : (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 text-text-secondary hover:text-primary rounded-full"
+                  onClick={handleRefreshVideos}
+                  title="Refresh Rekomendasi"
+                >
+                  <RotateCw size={16} />
+                </Button>
+              )}
+              <Button variant="link" className="text-primary font-bold p-0 h-auto" onClick={() => window.open('https://youtube.com', '_blank')}>
+                Lihat Semua
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

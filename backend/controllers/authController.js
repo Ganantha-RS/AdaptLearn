@@ -21,23 +21,35 @@ export const registerUser = async (req, res) => {
     const userId = authData.user?.id;
     
     if (userId) {
-      const { error: dbError } = await supabase
+      const { data: userData, error: dbError } = await supabase
         .from("users")
         .insert([
           {
             id: userId,
             name: name,
             email: email,
+            skill_level: "Pemula",
+            learning_style: "Visual",
+            needs_reassessment: true
           },
-        ]);
+        ])
+        .select()
+        .single();
 
       if (dbError) {
         console.error("Database insert error:", dbError);
         return res.status(400).json({ 
-          message: "Failed to create user.",
+          message: "Failed to create user profile.",
           error: dbError
         });
       }
+
+      return res.status(201).json({
+        message: "User registered successfully",
+        user: authData.user,
+        profile: userData,
+        session: authData.session, 
+      });
     }
 
     res.status(201).json({

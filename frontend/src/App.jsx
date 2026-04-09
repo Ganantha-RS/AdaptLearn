@@ -30,6 +30,7 @@ function App() {
 
   const profile = getProfile();
   const needsAssessment = profile?.needs_reassessment === true;
+  const isNewUser = !profile?.skill_level || !profile?.learning_style;
 
   return (
     <BrowserRouter>
@@ -37,13 +38,21 @@ function App() {
         {/* GRUP PUBLIC (Landing, Login, Register) */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<Landing />} />
-          <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} />
-          <Route path="/register" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Register />} />
+          <Route path="/login" element={isAuthenticated ? (isNewUser || needsAssessment ? <Navigate to="/welcome" /> : <Navigate to="/dashboard" />) : <Login />} />
+          <Route path="/register" element={isAuthenticated ? (isNewUser || needsAssessment ? <Navigate to="/welcome" /> : <Navigate to="/dashboard" />) : <Register />} />
         </Route>
 
         {/* GRUP QUIZ */}
         <Route
-          element={isAuthenticated ? <QuizLayout /> : <Navigate to="/login" />}
+          element={
+            !isAuthenticated ? (
+              <Navigate to="/login" />
+            ) : (isNewUser || needsAssessment) ? (
+              <QuizLayout />
+            ) : (
+              <Navigate to="/dashboard" />
+            )
+          }
         >
           <Route path="/welcome" element={<WelcomeScreen />} />
           <Route path="/quiz-style" element={<StyleIdentification />} />
