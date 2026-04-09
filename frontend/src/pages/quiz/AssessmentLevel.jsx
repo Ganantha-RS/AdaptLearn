@@ -6,6 +6,9 @@ import logoAdaptLearn from "@/assets/logo-adaptlearn.webp";
 
 const AssessmentLevel = () => {
   const navigate = useNavigate();
+  const userProfile = JSON.parse(localStorage.getItem("userProfile") || sessionStorage.getItem("userProfile") || "{}");
+  const isReassessment = userProfile.last_quiz_at && userProfile.needs_reassessment;
+
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -144,8 +147,18 @@ const AssessmentLevel = () => {
 
         <div className="flex justify-between items-center pt-10 border-t border-background-alt">
           <button
-            onClick={() => currentIndex > 0 ? setCurrentIndex(prev => prev - 1) : navigate("/quiz-style")}
-            className="text-text-secondary text-sm font-black uppercase tracking-widest hover:text-text-primary transition flex items-center gap-2 font-geist"
+            onClick={() => {
+              if (currentIndex > 0) {
+                setCurrentIndex(prev => prev - 1);
+              } else if (!isReassessment) {
+                navigate("/quiz-style");
+              }
+            }}
+            disabled={currentIndex === 0 && isReassessment}
+            className={`text-sm font-black uppercase tracking-widest transition flex items-center gap-2 font-geist
+              ${(currentIndex === 0 && isReassessment) 
+                ? "text-slate-300 cursor-not-allowed" 
+                : "text-text-secondary hover:text-text-primary"}`}
           >
             ← Previous
           </button>
