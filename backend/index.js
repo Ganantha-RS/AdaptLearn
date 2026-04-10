@@ -13,7 +13,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "*", 
+  origin: process.env.FRONTEND_URL || "*",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
@@ -46,22 +46,27 @@ app.get("/", (req, res) => {
 });
 
 app.use((req, res) => {
-  res.status(404).json({ 
-    success: false, 
-    message: `Route ${req.method} ${req.path} tidak ditemukan` 
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.method} ${req.path} tidak ditemukan`
   });
 });
 
 app.use((err, req, res, next) => {
   console.error("Unhandled error:", err);
-  res.status(500).json({ 
-    success: false, 
-    message: "Internal server error", 
-    error: err.message 
+  res.status(500).json({
+    success: false,
+    message: "Internal server error",
+    error: err.message
   });
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`✅ AdaptLearn server running on port ${PORT}`);
-});
+
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`✅ AdaptLearn server running on port ${PORT}`);
+  });
+}
+
+export default app;
