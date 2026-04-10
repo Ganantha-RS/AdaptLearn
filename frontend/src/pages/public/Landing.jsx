@@ -206,7 +206,7 @@ const Landing = () => {
         </section>
 
         {/* Mulai Dalam 3 Langkah Praktis */}
-        <section className="bg-gradient-to-b from-muted-50 via-muted-100 to-orange-300 py-24">
+        <section id="langkah-mulai" className="bg-gradient-to-b from-muted-50 via-muted-100 to-orange-300 py-24">
           <div className="container mx-auto px-6 text-center">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-16">
               Mulai Dalam 3 Langkah Praktis
@@ -251,7 +251,7 @@ const Landing = () => {
         </section>
 
         {/* Hasil yang Sesuai Gaya Belajarmu */}
-        <section className="bg-orange-300 pb-24">
+        <section id="gaya-belajar" className="bg-orange-300 pb-24">
           <div className="container mx-auto px-6">
             <Card className="max-w-4xl mx-auto bg-primary border-2 border-white/50 shadow-2xl">
               <CardContent className="p-12">

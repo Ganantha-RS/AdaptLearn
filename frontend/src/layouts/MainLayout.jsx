@@ -25,8 +25,9 @@ const MainLayout = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-4 items-center font-bold">
             <a href="/" className="hover:text-orange-500 transition">Home</a>
-            <a href="/about" className="hover:text-orange-500 transition">About Us</a>
             <a href="#fitur" className="hover:text-orange-500 transition">Fitur</a>
+            <a href="#langkah-mulai" className="hover:text-orange-500 transition">Langkah Mulai</a>
+            <a href="#gaya-belajar" className="hover:text-orange-500 transition">Gaya Belajar</a>
           </div>
 
           {/* Desktop Auth Buttons */}
@@ -125,8 +126,9 @@ const MainLayout = () => {
               <h3 className="text-primary font-bold mb-4">Quick Link</h3>
               <ul className="space-y-2 text-gray-400 text-sm">
                 <li><a href="/" className="hover:text-white transition">Home</a></li>
-                <li><a href="/about" className="hover:text-white transition">About Us</a></li>
                 <li><a href="#fitur" className="hover:text-white transition">Fitur</a></li>
+                <li><a href="#langkah-mulai" className="hover:text-white transition">Langkah Mulai</a></li>
+                <li><a href="#gaya-belajar" className="hover:text-white transition">Gaya Belajar</a></li>
               </ul>
             </div>
 
