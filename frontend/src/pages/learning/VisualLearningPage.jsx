@@ -45,13 +45,12 @@ const VisualLearningPage = () => {
         setIsDone(true);
         // Notify LearningLayout to refresh next/previous navigation
         window.dispatchEvent(new Event("materialMarkedAsDone"));
-        
         const profileRes = await api.get(`/auth/profile/${userProfile.id}`);
         const profileData = profileRes.data;
         if (profileData.success) {
           const storage = localStorage.getItem("userSession") ? localStorage : sessionStorage;
           storage.setItem("userProfile", JSON.stringify(profileData.data));
-          
+
           if (profileData.data.needs_reassessment) {
             window.location.href = "/welcome";
           }
@@ -65,21 +64,21 @@ const VisualLearningPage = () => {
   return (
     <div className="max-w-5xl mx-auto px-6 lg:px-8 py-10 flex flex-col items-center">
       <div className="w-full flex justify-start mb-4">
-         <Button variant="ghost" onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-600 -ml-4">
-            <ChevronLeft size={20} /> Kembali
-         </Button>
+        <Button variant="ghost" onClick={() => navigate("/dashboard")} className="flex items-center gap-2 text-gray-600 -ml-4">
+          <ChevronLeft size={20} /> Kembali
+        </Button>
       </div>
 
       <div className="w-full mb-10 items-center shadow-lg rounded-[16px] lg:rounded-[24px] overflow-hidden">
         <div className="w-full aspect-video bg-[#dbdbdb]">
-          <iframe 
-            width="100%" 
-            height="100%" 
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1`} 
-            title={videoDetails?.title || "YouTube video player"} 
-            frameBorder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-            referrerPolicy="strict-origin-when-cross-origin" 
+          <iframe
+            width="100%"
+            height="100%"
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+            title={videoDetails?.title || "YouTube video player"}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
           ></iframe>
         </div>
@@ -94,12 +93,12 @@ const VisualLearningPage = () => {
       </p>
 
       <div className="mb-16 lg:mb-24">
-        <Button 
+        <Button
           onClick={handleMarkAsDone}
           disabled={isDone}
           className={`px-10 lg:px-12 py-6 rounded-xl gap-2 lg:gap-3 text-base lg:text-lg font-bold shadow-md transition-all duration-300 ${isDone ? 'bg-green-600 hover:bg-green-700 opacity-90 cursor-default' : 'bg-[#ef5a1a] hover:bg-[#d44d15]'} text-white`}
         >
-          <CheckCircle size={22} className="stroke-[2.5px]" /> 
+          <CheckCircle size={22} className="stroke-[2.5px]" />
           {isDone ? "Selesai" : "Mark as Done"}
         </Button>
       </div>
