@@ -10,12 +10,6 @@ const api = axios.create({
 // Optional: Add interceptors for tokens or logging
 api.interceptors.request.use(
   (config) => {
-    // If you use JWT, you can add it here
-    // const session = localStorage.getItem('userSession');
-    // if (session) {
-    //   const { token } = JSON.parse(session);
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
     return config;
   },
   (error) => {
@@ -26,7 +20,6 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Global error handling can be done here
     return Promise.reject(error);
   }
 );
