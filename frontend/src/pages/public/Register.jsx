@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-const API_URL = "/api/auth/register";
+import api from "@/services/api";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -32,21 +32,13 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
+      const response = await api.post("/auth/register", {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || data.message || "Registration failed");
-      }
+      const data = response.data;
 
       if (data.session) {
         localStorage.setItem("userSession", JSON.stringify(data.session));
@@ -58,7 +50,7 @@ const Register = () => {
       // Force immediate redirect to welcome
       window.location.href = "/welcome";
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.response?.data?.error?.message || err.message || "Registration failed");
     } finally {
       setLoading(false);
     }

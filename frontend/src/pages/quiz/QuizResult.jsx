@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import api from "@/services/api";
 
 const QuizResult = () => {
   const navigate = useNavigate();
@@ -60,17 +61,13 @@ const QuizResult = () => {
 
         if (!userId) return;
 
-        const response = await fetch("http://localhost:5000/api/quiz/submit-result", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId,
-            learning_style: style,
-            skill_level: resultData.level,
-          }),
+        const response = await api.post("/quiz/submit-result", {
+          userId,
+          learning_style: style,
+          skill_level: resultData.level,
         });
 
-        if (response.ok) {
+        if (response.status === 200 || response.data?.success) {
           // Update local profile
           const updatedProfile = { 
             ...profile, 

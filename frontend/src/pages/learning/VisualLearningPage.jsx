@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, ChevronLeft } from "lucide-react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import api from "@/services/api";
 
 const VisualLearningPage = () => {
   const { videoId } = useParams();
@@ -14,18 +15,14 @@ const VisualLearningPage = () => {
 
   useEffect(() => {
     if (userProfile && videoId && videoDetails) {
-      fetch("http://localhost:5000/api/progress/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: userProfile.id,
-          external_id: videoId,
-          video_metadata: videoDetails,
-          status: "in_progress",
-        }),
+      api.post("/progress/save", {
+        user_id: userProfile.id,
+        external_id: videoId,
+        video_metadata: videoDetails,
+        status: "in_progress",
       })
-        .then((res) => res.json())
-        .then((data) => {
+        .then((res) => {
+          const data = res.data;
           if (data.success && data.data && data.data.status === "completed") {
             setIsDone(true);
           }
@@ -37,24 +34,20 @@ const VisualLearningPage = () => {
   const handleMarkAsDone = async () => {
     if (!userProfile) return;
     try {
-      const res = await fetch("http://localhost:5000/api/progress/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: userProfile.id,
-          external_id: videoId,
-          video_metadata: videoDetails,
-          status: "completed",
-        }),
+      const res = await api.post("/progress/save", {
+        user_id: userProfile.id,
+        external_id: videoId,
+        video_metadata: videoDetails,
+        status: "completed",
       });
-      const data = await res.json();
+      const data = res.data;
       if (data.success) {
         setIsDone(true);
         // Notify LearningLayout to refresh next/previous navigation
         window.dispatchEvent(new Event("materialMarkedAsDone"));
         
-        const profileRes = await fetch(`http://localhost:5000/api/auth/profile/${userProfile.id}`);
-        const profileData = await profileRes.json();
+        const profileRes = await api.get(`/auth/profile/${userProfile.id}`);
+        const profileData = profileRes.data;
         if (profileData.success) {
           const storage = localStorage.getItem("userSession") ? localStorage : sessionStorage;
           storage.setItem("userProfile", JSON.stringify(profileData.data));

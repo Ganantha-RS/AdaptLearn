@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-const API_URL = "/api/auth/login";
+import api from "@/services/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -23,20 +23,12 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
+      const response = await api.post("/auth/login", {
+        email: formData.email,
+        password: formData.password,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Invalid login credentials");
-      }
+      const data = response.data;
 
       const storage = rememberMe ? localStorage : sessionStorage;
       storage.setItem("userSession", JSON.stringify(data.session));
@@ -48,7 +40,7 @@ const Login = () => {
         window.location.href = "/welcome";
       }
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message || "Invalid login credentials");
     } finally {
       setLoading(false);
     }

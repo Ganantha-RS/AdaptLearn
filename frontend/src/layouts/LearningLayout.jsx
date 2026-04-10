@@ -1,6 +1,7 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, Bell } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import api from '@/services/api';
 import logo from '../assets/logo-adaptlearn.webp';
 
 const LearningLayout = () => {
@@ -10,72 +11,69 @@ const LearningLayout = () => {
   const [previousMaterial, setPreviousMaterial] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const getCurrentMaterialId = () => {
+  const getCurrentMaterialId = useCallback(() => {
     const path = location.pathname;
     const match = path.match(/\/belajar\/(materi|video)\/([^/]+)/);
     return match ? match[2] : null;
-  };
+  }, [location.pathname]);
 
-  const getUserProfile = () => {
+  const getUserProfile = useCallback(() => {
     const userStr = localStorage.getItem("userProfile") || sessionStorage.getItem("userProfile");
     return userStr ? JSON.parse(userStr) : null;
-  };
+  }, []);
+
+  const fetchNavigationMaterials = useCallback(async () => {
+    const currentId = getCurrentMaterialId();
+    if (!currentId) return;
+
+    const userProfile = getUserProfile();
+    
+    try {
+      setLoading(true);
+      
+      // Fetch next material
+      const nextResponse = await api.get(`/recommendations/next/${currentId}`, {
+        params: userProfile ? { user_id: userProfile.id } : {}
+      });
+      const nextData = nextResponse.data;
+      
+      if (nextData.success && nextData.data) {
+        setNextMaterial(nextData.data);
+      } else {
+        setNextMaterial(null);
+      }
+
+      // Fetch previous material
+      const prevResponse = await api.get(`/recommendations/previous/${currentId}`, {
+        params: userProfile ? { user_id: userProfile.id } : {}
+      });
+      const prevData = prevResponse.data;
+      
+      console.log("Previous material response:", prevData);
+      
+      if (prevData.success && prevData.data) {
+        setPreviousMaterial(prevData.data);
+      } else {
+        setPreviousMaterial(null);
+      }
+    } catch (error) {
+      console.error("Error fetching navigation materials:", error);
+      setNextMaterial(null);
+      setPreviousMaterial(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [getCurrentMaterialId, getUserProfile]);
 
   useEffect(() => {
-    const fetchNavigationMaterials = async () => {
-      const currentId = getCurrentMaterialId();
-      if (!currentId) return;
-
-      const userProfile = getUserProfile();
-      
-      try {
-        setLoading(true);
-        
-        // Fetch next material
-        const nextUrl = `http://localhost:5000/api/recommendations/next/${currentId}${
-          userProfile ? `?user_id=${userProfile.id}` : ''
-        }`;
-        const nextResponse = await fetch(nextUrl);
-        const nextData = await nextResponse.json();
-        
-        if (nextData.success && nextData.data) {
-          setNextMaterial(nextData.data);
-        } else {
-          setNextMaterial(null);
-        }
-
-        // Fetch previous material
-        const prevUrl = `http://localhost:5000/api/recommendations/previous/${currentId}${
-          userProfile ? `?user_id=${userProfile.id}` : ''
-        }`;
-        const prevResponse = await fetch(prevUrl);
-        const prevData = await prevResponse.json();
-        
-        console.log("Previous material response:", prevData);
-        
-        if (prevData.success && prevData.data) {
-          setPreviousMaterial(prevData.data);
-        } else {
-          setPreviousMaterial(null);
-        }
-      } catch (error) {
-        console.error("Error fetching navigation materials:", error);
-        setNextMaterial(null);
-        setPreviousMaterial(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchNavigationMaterials();
-  }, [location.pathname]);
+  }, [fetchNavigationMaterials]);
 
   // Listen for markAsDone event from child pages to refresh next/prev navigation
   useEffect(() => {
-    const handleRefresh = () => fetchNavigationMaterials();
-    window.addEventListener("materialMarkedAsDone", handleRefresh);
-    return () => window.removeEventListener("materialMarkedAsDone", handleRefresh);
-  }, [location.pathname]);
+    window.addEventListener("materialMarkedAsDone", fetchNavigationMaterials);
+    return () => window.removeEventListener("materialMarkedAsDone", fetchNavigationMaterials);
+  }, [fetchNavigationMaterials]);
 
   const handleNextLesson = () => {
     if (!nextMaterial) {

@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
+import api from "@/services/api";
 
 const DashboardHome = () => {
   const navigate = useNavigate();
@@ -40,8 +41,8 @@ const DashboardHome = () => {
         const profile = JSON.parse(profileStr);
         setUserProfile(profile);
 
-        const response = await fetch(`/api/recommendations/${profile.id}`);
-        const data = await response.json();
+        const response = await api.get(`/recommendations/${profile.id}`);
+        const data = response.data;
         if (data.success) {
           setDashboardData(data);
         }
@@ -59,8 +60,10 @@ const DashboardHome = () => {
     if (refreshing) return;
     setRefreshing(true);
     try {
-      const response = await fetch(`/api/recommendations/${userProfile.id}?refresh=true`);
-      const data = await response.json();
+      const response = await api.get(`/recommendations/${userProfile.id}`, {
+        params: { refresh: true }
+      });
+      const data = response.data;
       if (data.success) {
         setDashboardData(prev => ({
           ...prev,

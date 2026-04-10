@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import logoAdaptLearn from "@/assets/logo-adaptlearn.webp";
+import api from "@/services/api";
 
 const AssessmentLevel = () => {
   const navigate = useNavigate();
@@ -18,17 +19,20 @@ const AssessmentLevel = () => {
     const fetchQuestions = async () => {
       try {
         setLoading(true);
-        const res = await fetch("http://localhost:5000/api/quiz/questions");
-        const data = await res.json();
+        const res = await api.get("/quiz/questions");
+        const data = res.data;
         
         if (Array.isArray(data)) {
           setQuestions(data);
+        } else if (data.data && Array.isArray(data.data)) {
+          // Handle case where backend wraps data in a 'data' property
+          setQuestions(data.data);
         } else {
           setError("Failed to load questions format");
         }
       } catch (err) {
         console.error("Fetch error:", err);
-        setError("Could not connect to the quiz server.");
+        setError(err.response?.data?.message || "Could not connect to the quiz server.");
       } finally {
         setLoading(false);
       }

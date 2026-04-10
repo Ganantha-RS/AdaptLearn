@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { CheckCircle, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
+import api from "@/services/api";
 
 const ReadingLearningPage = () => {
   const { materiId } = useParams();
@@ -28,8 +29,8 @@ const ReadingLearningPage = () => {
       try {
         setLoading(true);
         
-        const materialRes = await fetch(`http://localhost:5000/api/materials/${materiId}`);
-        const materialData = await materialRes.json();
+        const materialRes = await api.get(`/materials/${materiId}`);
+        const materialData = materialRes.data;
         
         if (materialData.success) {
           setMateri(materialData.data);
@@ -39,8 +40,8 @@ const ReadingLearningPage = () => {
 
         if (userProfile && userProfile.id) {
           
-          const progressRes = await fetch(`http://localhost:5000/api/progress/${userProfile.id}`);
-          const progressData = await progressRes.json();
+          const progressRes = await api.get(`/progress/${userProfile.id}`);
+          const progressData = progressRes.data;
           
           let alreadyCompleted = false;
           if (progressData.success) {
@@ -52,14 +53,10 @@ const ReadingLearningPage = () => {
           }
 
           if (!alreadyCompleted) {
-            await fetch("http://localhost:5000/api/progress/save", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                user_id: userProfile.id,
-                material_id: materiId,
-                status: "in_progress",
-              }),
+            await api.post("/progress/save", {
+              user_id: userProfile.id,
+              material_id: materiId,
+              status: "in_progress",
             });
           }
         } else {
@@ -87,24 +84,20 @@ const ReadingLearningPage = () => {
     setSaving(true);
     
     try {
-      const res = await fetch("http://localhost:5000/api/progress/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: userProfile.id,
-          material_id: materiId,
-          status: "completed",
-        }),
+      const res = await api.post("/progress/save", {
+        user_id: userProfile.id,
+        material_id: materiId,
+        status: "completed",
       });
       
-      const data = await res.json();
+      const data = res.data;
       
       if (data.success) {
         setIsDone(true);
         window.dispatchEvent(new Event("materialMarkedAsDone"));
         
-        const profileRes = await fetch(`http://localhost:5000/api/auth/profile/${userProfile.id}`);
-        const profileData = await profileRes.json();
+        const profileRes = await api.get(`/auth/profile/${userProfile.id}`);
+        const profileData = profileRes.data;
         
         if (profileData.success) {
           const storage = localStorage.getItem("userSession") ? localStorage : sessionStorage;
