@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CheckCircle, ChevronLeft, ArrowRight, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,12 +17,12 @@ const ReadingLearningPage = () => {
   const [previousMaterial, setPreviousMaterial] = useState(null);
   const [navLoading, setNavLoading] = useState(false);
 
-  const getUserProfile = () => {
+  const getUserProfile = useCallback(() => {
     const userStr = localStorage.getItem("userProfile") || sessionStorage.getItem("userProfile");
     return userStr ? JSON.parse(userStr) : null;
-  };
+  }, []);
 
-  const userProfile = getUserProfile();
+  const userProfile = useMemo(() => getUserProfile(), [getUserProfile]);
 
   const fetchNavigationMaterials = useCallback(async () => {
     if (!materiId) return;
@@ -115,7 +115,8 @@ const ReadingLearningPage = () => {
       fetchMaterialAndProgress();
       fetchNavigationMaterials();
     }
-  }, [materiId, userProfile, fetchNavigationMaterials]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [materiId, fetchNavigationMaterials]);
 
   // Listen for markAsDone event to refresh next/prev navigation
   useEffect(() => {
