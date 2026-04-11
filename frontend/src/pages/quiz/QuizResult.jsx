@@ -81,6 +81,7 @@ const QuizResult = () => {
           const updatedProfile = { 
             ...profile, 
             needs_reassessment: false, 
+            last_quiz_at: new Date().toISOString(), // Mark that the user has completed their first quiz
             skill_level: resultData.level.replace(" Level", "") === "Advanced" ? "Mahir" : 
                          resultData.level.replace(" Level", "") === "Intermediate" ? "Menengah" : "Pemula",
             learning_style: style === "visual" ? "Visual" : "Teks"
