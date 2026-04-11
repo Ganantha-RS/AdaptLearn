@@ -50,16 +50,25 @@ const QuizResult = () => {
 
   const [countdown, setCountdown] = useState(0);
 
+  const [syncing, setSyncing] = useState(true);
+
   useEffect(() => {
     const syncResults = async () => {
       try {
+        setSyncing(true);
         const profileStr = localStorage.getItem("userProfile") || sessionStorage.getItem("userProfile");
-        if (!profileStr) return;
+        if (!profileStr) {
+          setSyncing(false);
+          return;
+        }
 
         const profile = JSON.parse(profileStr);
         const userId = profile.id;
 
-        if (!userId) return;
+        if (!userId) {
+          setSyncing(false);
+          return;
+        }
 
         const response = await api.post("/quiz/submit-result", {
           userId,
@@ -68,7 +77,7 @@ const QuizResult = () => {
         });
 
         if (response.status === 200 || response.data?.success) {
-          // Update local profile
+          // Update local profile immediately to stop redirect loop
           const updatedProfile = { 
             ...profile, 
             needs_reassessment: false, 
@@ -79,11 +88,12 @@ const QuizResult = () => {
           const storage = localStorage.getItem("userSession") ? localStorage : sessionStorage;
           storage.setItem("userProfile", JSON.stringify(updatedProfile));
           
-          // cooldown timer
           setCountdown(60);
         }
       } catch (err) {
         console.error("Failed to sync quiz results:", err);
+      } finally {
+        setSyncing(false);
       }
     };
 
@@ -129,14 +139,17 @@ const QuizResult = () => {
 
         <div className="flex flex-col sm:flex-row gap-5 w-full">
           <Button 
-            onClick={() => window.location.href = "/dashboard"}
-            className="bg-primary hover:bg-primary-dark text-white h-16 flex-[1.5] rounded-full font-black text-[15px] transition-all shadow-xl shadow-primary/25"
+            disabled={syncing}
+            onClick={() => navigate("/dashboard")}
+            className="bg-primary hover:bg-primary-dark text-white h-16 flex-[1.5] rounded-full font-black text-[15px] transition-all shadow-xl shadow-primary/25 disabled:opacity-70"
           >
-            LIHAT REKOMENDASI MATERI <span className="ml-2 font-normal text-2xl">→</span>
+            {syncing ? "Menyimpan..." : (
+              <>LIHAT REKOMENDASI MATERI <span className="ml-2 font-normal text-2xl">→</span></>
+            )}
           </Button>
           
           <button 
-            disabled={countdown > 0}
+            disabled={countdown > 0 || syncing}
             onClick={() => {
               localStorage.removeItem("quizResults");
               navigate("/welcome");
