@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5000/api";
+// const API_BASE_URL = "http://localhost:5000/api";
+// Change to http://localhost:5000/api if testing locally
+const API_BASE_URL = "https://adapt-learn-be.vercel.app/api";
 
 async function testAPI() {
     console.log("checking if the api actually works...\n");
