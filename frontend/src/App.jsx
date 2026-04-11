@@ -20,79 +20,77 @@ import AssessmentLevel from "./pages/quiz/AssessmentLevel";
 import AnalysisLoading from "./pages/quiz/AnalysisLoading";
 import QuizResult from "./pages/quiz/QuizResult";
 
-function App() {
-  const isAuthenticated = !!localStorage.getItem("userSession") || !!sessionStorage.getItem("userSession");
-  
-  const getProfile = () => {
-    const profile = localStorage.getItem("userProfile") || sessionStorage.getItem("userProfile");
-    return profile ? JSON.parse(profile) : null;
-  };
+const getAuthStatus = () => !!localStorage.getItem("userSession") || !!sessionStorage.getItem("userSession");
 
+const getProfile = () => {
+  const profile = localStorage.getItem("userProfile") || sessionStorage.getItem("userProfile");
+  return profile ? JSON.parse(profile) : null;
+};
+
+// Helper components for clean routing
+const AuthGuard = ({ children, requireAssessment = false }) => {
+  const isAuthenticated = getAuthStatus();
   const profile = getProfile();
   const needsAssessment = profile?.needs_reassessment === true;
   const isNewUser = !profile?.last_quiz_at;
 
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+
+  if (requireAssessment && !isNewUser && !needsAssessment) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  if (!requireAssessment && (isNewUser || needsAssessment)) {
+    return <Navigate to="/welcome" replace />;
+  }
+
+  return children;
+};
+
+const PublicRoute = ({ children }) => {
+  const isAuthenticated = getAuthStatus();
+  const profile = getProfile();
+  const needsAssessment = profile?.needs_reassessment === true;
+  const isNewUser = !profile?.last_quiz_at;
+
+  if (isAuthenticated) {
+    return (isNewUser || needsAssessment) ? <Navigate to="/welcome" replace /> : <Navigate to="/dashboard" replace />;
+  }
+  return children;
+};
+
+function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* GRUP PUBLIC (Landing, Login, Register) */}
+        {/* GRUP PUBLIC */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<Landing />} />
-          <Route path="/login" element={isAuthenticated ? (isNewUser || needsAssessment ? <Navigate to="/welcome" /> : <Navigate to="/dashboard" />) : <Login />} />
-          <Route path="/register" element={isAuthenticated ? (isNewUser || needsAssessment ? <Navigate to="/welcome" /> : <Navigate to="/dashboard" />) : <Register />} />
+          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
         </Route>
 
         {/* GRUP QUIZ */}
-        <Route
-          element={
-            !isAuthenticated ? (
-              <Navigate to="/login" />
-            ) : (isNewUser || needsAssessment) ? (
-              <QuizLayout />
-            ) : (
-              <Navigate to="/dashboard" />
-            )
-          }
-        >
-          <Route path="/welcome" element={<WelcomeScreen />} />
-          <Route path="/quiz-style" element={<StyleIdentification />} />
-          <Route path="/quiz-level" element={<AssessmentLevel />} />
-          <Route path="/analyzing" element={<AnalysisLoading />} />
-          <Route path="/quiz-result" element={<QuizResult />} />
+        <Route path="/" element={<AuthGuard requireAssessment={true}><QuizLayout /></AuthGuard>}>
+          <Route path="welcome" element={<WelcomeScreen />} />
+          <Route path="quiz-style" element={<StyleIdentification />} />
+          <Route path="quiz-level" element={<AssessmentLevel />} />
+          <Route path="analyzing" element={<AnalysisLoading />} />
+          <Route path="quiz-result" element={<QuizResult />} />
         </Route>
 
         {/* GRUP DASHBOARD */}
-        <Route
-          element={
-            !isAuthenticated ? (
-              <Navigate to="/login" />
-            ) : needsAssessment ? (
-              <Navigate to="/welcome" />
-            ) : (
-              <DashboardLayout />
-            )
-          }
-        >
-          <Route path="/dashboard" element={<DashboardHome />} />
+        <Route path="/" element={<AuthGuard><DashboardLayout /></AuthGuard>}>
+          <Route path="dashboard" element={<DashboardHome />} />
         </Route>
 
         {/* GRUP LEARNING */}
-        <Route
-          element={
-            !isAuthenticated ? (
-              <Navigate to="/login" />
-            ) : needsAssessment ? (
-              <Navigate to="/welcome" />
-            ) : (
-              <LearningLayout />
-            )
-          }
-        >
-          <Route path="/belajar/video/:videoId" element={<VisualLearningPage />} />
-          <Route path="/belajar/materi/:materiId" element={<ReadingLearningPage />} />
+        <Route path="/" element={<AuthGuard><LearningLayout /></AuthGuard>}>
+          <Route path="belajar/video/:videoId" element={<VisualLearningPage />} />
+          <Route path="belajar/materi/:materiId" element={<ReadingLearningPage />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/dashboard" />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
   );
