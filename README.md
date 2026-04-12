@@ -131,6 +131,9 @@ VITE_API_URL=http://localhost:5000/api
 
 Pastikan Anda sudah memiliki project di [Supabase](https://supabase.com/) dengan tabel-tabel yang dibutuhkan aplikasi (users, materials, progress, quiz results, dsb.). Gunakan `SUPABASE_URL` dan `SUPABASE_KEY` dari dashboard Supabase Anda.
 
+### 5. Masukan Dataset
+Unduh dataset dari [gdrive]([https://supabase.com/](https://drive.google.com/drive/folders/1yp8-byk1j7syQ6ThQT3R-Z767lBtfjdT?usp=drive_link)) untuk material teks dan gambar pendukung materi teks dan masukan keduanya pada supabase 
+
 ## 🚀 Cara Menjalankan Aplikasi
 
 ### Menjalankan Backend
